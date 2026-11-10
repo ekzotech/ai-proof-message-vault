@@ -24,5 +24,8 @@ class CapsulePreviewTest extends TestCase
             ->assertDontSee($draft->body);
 
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+
+        $this->get($url.'?preset=experimental')->assertOk()->assertSee('Экспериментальный');
+        $this->get($url.'?preset[]=experimental')->assertNotFound();
     }
 }

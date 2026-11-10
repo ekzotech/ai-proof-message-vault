@@ -13,7 +13,7 @@ class TransformationPipeline
 
     private const MAX_BIDI_GROUPS = 256;
 
-    public function transform(string $text, string $seed): TransformationResult
+    public function transform(string $text, string $seed, TransformationPreset $preset = TransformationPreset::Gentle): TransformationResult
     {
         if (strlen($text) > 4 * CapsuleText::MAX_BODY || mb_strlen($text) > CapsuleText::MAX_BODY) {
             throw new LengthException('Capsule text exceeds the transformation limit.');
@@ -28,7 +28,9 @@ class TransformationPipeline
 
         for ($index = 0; $index < $count; $index++) {
             $word = $chunks[$index];
-            $group = $bidiGroups < self::MAX_BIDI_GROUPS ? $this->groupAt($chunks, $index) : null;
+            $group = $preset === TransformationPreset::Experimental && $bidiGroups < self::MAX_BIDI_GROUPS
+                ? $this->groupAt($chunks, $index)
+                : null;
 
             if ($group !== null && $random->getInt(1, 3) === 1) {
                 if ($plain !== '') {
