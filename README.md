@@ -80,3 +80,19 @@ composer dusk
 Если переносимый PHP на Windows не доверяет центру сертификации при загрузке, скачайте соответствующий ChromeDriver из [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/) и поместите распакованный `chromedriver.exe` в `vendor/laravel/dusk/bin/chromedriver-win.exe`. Тестовый запуск использует временную SQLite, случайный ключ и отдельный порт. Почта остаётся в памяти тестового процесса.
 
 При локальном сбое Dusk оставляет снимки и HTML в `tests/Browser`. В GitHub Actions выполняются те же тесты, а отчёт содержит количество файлов диагностики.
+
+## Развёртывание и откат
+
+Укажите корень веб-сервера `public/` и включите HTTPS. В отдельном staging-окружении используйте собственные SQLite и `APP_KEY`. Для публичного запуска настройте `APP_ENV=production`, `APP_DEBUG=false`, канонический `APP_URL`, реальный почтовый транспорт и доступ на запись только в необходимые каталоги Laravel и БД. Для staging с HTTPS задайте `SESSION_SECURE_COOKIE=true` явно. Храните ключ вне репозитория и сохраняйте его между релизами.
+
+```sh
+composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+npm ci
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Сначала проверьте `/up` и `/ready`. Первый маршрут проверяет запуск Laravel, второй проверяет чтение из базы и отдаёт 503 при недоступности. В staging проверьте вход, создание черновика и обе стороны даты открытия. Для отката остановите трафик и фоновые процессы, восстановите предыдущий релиз с его lock-файлами и согласованную резервную копию БД, сохранив её ключ. Пересоберите кеши и повторите HTTP-проверки. В локальной репетиции использовалась отдельная SQLite.
