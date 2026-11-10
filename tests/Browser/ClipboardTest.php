@@ -8,6 +8,27 @@ use Tests\DuskTestCase;
 
 class ClipboardTest extends DuskTestCase
 {
+    public function test_the_author_can_copy_the_link_and_use_the_manual_fallback(): void
+    {
+        $snapshot = $this->publishFixture('Текст проверки', [['kind' => 'text', 'text' => 'Снимок проверки']]);
+
+        $this->browse(function (Browser $browser) use ($snapshot): void {
+            $browser->loginAs($snapshot->capsule->author)
+                ->visitRoute('capsules.publication', $snapshot->capsule)
+                ->waitFor('#reader-link');
+            $this->allowClipboard($browser);
+            $browser->press('Копировать ссылку')->waitForText('Ссылка скопирована.');
+            $this->assertSame(route('capsules.read', $snapshot->reader_token), $this->readClipboard($browser));
+
+            $browser->script("Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });");
+            $browser->press('Копировать ссылку')->waitForText('Скопируйте выделенную ссылку вручную.');
+            $this->assertTrue($browser->script(<<<'JS'
+                const link = document.querySelector('#reader-link');
+                return link.selectionStart === 0 && link.selectionEnd === link.value.length;
+                JS)[0]);
+        });
+    }
+
     public function test_mouse_selection_and_ctrl_c_copy_the_dom_text_to_the_real_clipboard(): void
     {
         $original = 'alpha beta';
