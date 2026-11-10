@@ -18,6 +18,8 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $attributes = ['timezone' => 'UTC'];
+
     public function capsules(): HasMany
     {
         return $this->hasMany(Capsule::class, 'author_id');

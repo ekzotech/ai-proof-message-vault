@@ -13,6 +13,15 @@
             <p><a class="underline" href="{{ route('verification.notice') }}">Подтвердить почту</a></p>
         @endif
 
+        <nav class="preview-presets" aria-label="Фильтр капсул">
+            <a class="underline" href="{{ route('dashboard') }}" @if ($state === null) aria-current="page" @endif>Все</a>
+            @foreach (\App\Capsules\CapsuleState::cases() as $filter)
+                <a class="underline" href="{{ route('dashboard', ['status' => $filter->value]) }}"
+                    @if ($state === $filter) aria-current="page" @endif>{{ $filter->label() }}</a>
+            @endforeach
+        </nav>
+
+        @if ($drafts !== null)
         <div class="draft-list">
             <h2>Черновики</h2>
             @if ($drafts->isEmpty())
@@ -36,6 +45,8 @@
                 {{ $drafts->links() }}
             @endif
         </div>
+        @endif
+        @if ($published !== null)
         <div class="draft-list">
             <h2>Опубликованные капсулы</h2>
             @if ($published->isEmpty())
@@ -46,7 +57,7 @@
                         <li>
                             <a class="underline" href="{{ route('capsules.publication', $capsule) }}">{{ $capsule->title }}</a>
                             <div class="capsule-list-meta">
-                                <span class="status-label">{{ \App\Capsules\CapsuleState::at($capsule->publication, now())->label() }}</span>
+                                <span class="status-label">{{ \App\Capsules\CapsuleState::at($capsule->publication, $now)->label() }}</span>
                                 <time datetime="{{ $capsule->publication->opens_at->toIso8601String() }}">
                                     {{ $capsule->publication->opens_at->setTimezone(auth()->user()->timezone)->format('d.m.Y H:i T') }}
                                 </time>
@@ -57,5 +68,6 @@
                 {{ $published->links() }}
             @endif
         </div>
+        @endif
     </section>
 </x-layouts.vault>

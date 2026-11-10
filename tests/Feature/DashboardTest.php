@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,6 +11,27 @@ use Tests\TestCase;
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_the_filter_keeps_only_the_requested_capsule_state(): void
+    {
+        $author = User::factory()->create();
+        $draft = Capsule::factory()->for($author, 'author')->create(['title' => 'Уникальный черновик']);
+        $published = Capsule::factory()->for($author, 'author')->create(['title' => 'Опубликованное послание']);
+        $published->publication()->create([
+            'title' => $published->title,
+            'opens_at' => now()->addHour(),
+            'algorithm_version' => 1,
+            'seed' => $published->transformation_seed,
+            'preset' => TransformationPreset::Gentle,
+            'segments' => [],
+        ]);
+
+        $this->withoutVite()->actingAs($author)->get(route('dashboard', ['status' => 'waiting']))
+            ->assertOk()->assertSee($published->title)->assertDontSee($draft->title);
+        $this->get(route('dashboard', ['status' => 'draft']))
+            ->assertOk()->assertSee($draft->title)->assertDontSee($published->title);
+        $this->get(route('dashboard', ['status' => 'open']))->assertOk()->assertDontSee($published->title);
+    }
 
     public function test_the_dashboard_is_private_and_prompts_unverified_authors(): void
     {
