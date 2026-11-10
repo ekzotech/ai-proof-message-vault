@@ -41,5 +41,6 @@ class TextTransformationsTest extends TestCase
         $this->assertNull(BidiWordGroup::reverse('hello, world'));
         $this->assertNull(BidiWordGroup::reverse("hello\nworld"));
         $this->assertNull(BidiWordGroup::reverse('hello мир🙂'));
+        $this->assertNull(BidiWordGroup::reverse('MMMMMMMM MMMMMMMM'));
     }
 }

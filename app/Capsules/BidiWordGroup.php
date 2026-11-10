@@ -10,6 +10,8 @@ class BidiWordGroup
             return null;
         }
 
-        return implode('', array_reverse(TextSegmentation::graphemes($text)));
+        $graphemes = TextSegmentation::graphemes($text);
+
+        return count($graphemes) <= 15 ? implode('', array_reverse($graphemes)) : null;
     }
 }
