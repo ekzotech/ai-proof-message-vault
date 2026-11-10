@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Capsules\ExtractionReport;
 use App\Capsules\TextExtraction;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -9,6 +10,15 @@ use Tests\Fixtures\CapsuleSamples;
 
 class TextExtractionTest extends TestCase
 {
+    #[DataProviderExternal(CapsuleSamples::class, 'extractionCases')]
+    public function test_combined_extraction_reports_successes_and_failures(string $original, string $markup, string $dom, bool $combined): void
+    {
+        $report = ExtractionReport::measure($original, $markup);
+        $this->assertSame(array_keys(ExtractionReport::LABELS), array_keys($report));
+        $this->assertSame($original === $dom, $report['dom']);
+        $this->assertSame($combined, $report['combined']);
+    }
+
     public function test_bidi_aware_extraction_reverses_only_marked_groups(): void
     {
         $markup = '<div class="capsule-text">A <bdo dir="rtl">dlrow olleh</bdo> B</div>';
