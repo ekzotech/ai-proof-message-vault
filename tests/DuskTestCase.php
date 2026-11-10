@@ -5,9 +5,11 @@ namespace Tests;
 use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\CapsulePublication;
+use Facebook\WebDriver\Chrome\ChromeDevToolsDriver;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use LogicException;
 use PHPUnit\Framework\Attributes\BeforeClass;
@@ -68,5 +70,15 @@ abstract class DuskTestCase extends BaseTestCase
         $publication->save();
 
         return $publication;
+    }
+
+    protected function phoneViewport(Browser $browser): ChromeDevToolsDriver
+    {
+        $cdp = new ChromeDevToolsDriver($browser->driver);
+        $cdp->execute('Emulation.setDeviceMetricsOverride', [
+            'width' => 390, 'height' => 844, 'deviceScaleFactor' => 1, 'mobile' => true,
+        ]);
+
+        return $cdp;
     }
 }

@@ -17,7 +17,8 @@ class ReaderPresentationTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) use ($snapshot): void {
-            $browser->resize(390, 844)->visitRoute('capsules.read', $snapshot->reader_token)
+            $this->phoneViewport($browser);
+            $browser->visitRoute('capsules.read', $snapshot->reader_token)
                 ->waitFor('.capsule-text bdo')->screenshot('reader-transformed');
             $transformed = $browser->script($this->glyphPositions(true))[0];
             $browser->clickLink('Обычный текст для скринридера')
