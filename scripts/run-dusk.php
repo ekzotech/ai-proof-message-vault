@@ -78,7 +78,7 @@ try {
         usleep(100_000);
     }
 
-    $dusk = new Process([PHP_BINARY, 'artisan', 'dusk', ...array_slice($argv, 1)], $root, $environment, timeout: 240);
+    $dusk = new Process([PHP_BINARY, 'artisan', 'dusk', '--without-tty', ...array_slice($argv, 1)], $root, $environment, timeout: 240);
     $status = $dusk->run(fn (string $type, string $output) => fwrite($type === Process::ERR ? STDERR : STDOUT, $output));
 } finally {
     $server->stop(1);
