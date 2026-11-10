@@ -7,6 +7,11 @@ use App\Models\User;
 
 class CapsulePolicy
 {
+    public function delete(User $user, Capsule $capsule): bool
+    {
+        return $this->view($user, $capsule);
+    }
+
     public function create(User $user): bool
     {
         return true;

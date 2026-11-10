@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\CapsuleDeletionController;
 use App\Http\Controllers\CapsulePreviewController;
 use App\Http\Controllers\CapsulePublicationController;
 use App\Http\Controllers\CapsuleReaderController;
@@ -41,6 +42,10 @@ Route::middleware('auth')->group(function (): void {
         ->can('view', 'capsule')->name('capsules.publication');
     Route::patch('/capsules/{capsule}/revoke', [CapsulePublicationController::class, 'revoke'])
         ->can('view', 'capsule')->name('capsules.revoke');
+    Route::get('/capsules/{capsule}/delete', [CapsuleDeletionController::class, 'confirm'])
+        ->can('delete', 'capsule')->name('capsules.delete');
+    Route::delete('/capsules/{capsule}', [CapsuleDeletionController::class, 'destroy'])
+        ->can('delete', 'capsule')->name('capsules.destroy');
     Route::view('/profile', 'profile')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');

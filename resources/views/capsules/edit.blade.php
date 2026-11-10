@@ -7,5 +7,6 @@
             <p role="status">{{ session('status') }}</p>
         @endif
         <livewire:capsule-draft-editor :capsule="$capsule" />
+        <p class="mt-6"><a class="underline" href="{{ route('capsules.delete', $capsule) }}">Удалить черновик</a></p>
     </section>
 </x-layouts.vault>

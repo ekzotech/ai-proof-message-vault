@@ -17,6 +17,23 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_deleting_a_capsule_removes_its_snapshot_and_reader_link(): void
+    {
+        $draft = Capsule::factory()->create();
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $link = route('capsules.read', $snapshot->reader_token);
+        $delete = route('capsules.destroy', $draft);
+
+        $this->withoutVite()->actingAs(User::factory()->create())->delete($delete)->assertForbidden();
+        $this->actingAs($draft->author)->get(route('capsules.delete', $draft))->assertSee('Удалить капсулу?');
+        $this->delete($delete)->assertRedirect(route('dashboard'));
+        $this->assertModelMissing($draft);
+        $this->assertModelMissing($snapshot);
+        $this->get($link)->assertNotFound();
+    }
+
     public function test_revoking_a_link_hides_it_and_makes_it_unavailable(): void
     {
         $draft = Capsule::factory()->create();

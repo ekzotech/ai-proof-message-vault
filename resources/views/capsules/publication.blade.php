@@ -25,6 +25,7 @@
                 <button class="action" type="submit">Отозвать ссылку</button>
             </form>
         @endif
+        <p><a class="underline" href="{{ route('capsules.delete', $capsule) }}">Удалить капсулу</a></p>
         <p><a class="underline" href="{{ route('dashboard') }}">В кабинет</a></p>
     </section>
 </x-layouts.vault>
