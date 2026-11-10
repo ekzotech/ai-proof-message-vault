@@ -4,7 +4,12 @@
     @enderror
 
     @error('conflict')
-        <p class="auth-error" role="alert">{{ $message }}</p>
+        <div class="form-errors" role="alert">
+            <p>{{ $message }}</p>
+            <a class="underline" href="{{ route('capsules.edit', $capsuleId) }}" target="_blank" rel="noopener">
+                Открыть свежую версию в новой вкладке
+            </a>
+        </div>
     @enderror
 
     <div class="auth-field">
@@ -60,5 +65,7 @@
         </div>
     @endif
 
-    <button class="action" type="submit" wire:loading.attr="disabled">Сохранить черновик</button>
+    <button class="action" type="submit" wire:loading.attr="disabled" wire:target="save">Сохранить черновик</button>
+    <p class="auth-hint" role="status" wire:loading wire:target="save">Сохраняем черновик…</p>
+    <p class="auth-hint" wire:dirty wire:target="title, body, opening, openingOffset">Есть несохранённые изменения.</p>
 </form>

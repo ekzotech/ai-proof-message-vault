@@ -100,6 +100,7 @@ class CapsuleDraftTest extends TestCase
 
         $first->set('body', 'Первая сохранённая версия')->call('save')->assertHasNoErrors();
         $second->set('body', 'Текст из старой вкладки')->call('save')->assertHasErrors('conflict')
+            ->assertSee('Открыть свежую версию в новой вкладке')
             ->assertSet('body', 'Текст из старой вкладки');
 
         $this->assertSame('Первая сохранённая версия', $draft->fresh()->body);
