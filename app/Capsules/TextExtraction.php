@@ -24,10 +24,17 @@ class TextExtraction
         return Normalizer::normalize($text, $compatibility ? Normalizer::FORM_KC : Normalizer::FORM_C);
     }
 
-    public static function readDom(string $markup): string
+    public static function readDom(string $markup, bool $restoreBidi = false): string
     {
         $document = HTMLDocument::createFromString($markup, LIBXML_NOERROR, 'UTF-8');
+        $capsule = $document->querySelector('.capsule-text');
 
-        return $document->querySelector('.capsule-text')?->textContent ?? '';
+        if ($restoreBidi && $capsule !== null) {
+            foreach ($capsule->querySelectorAll('bdo[dir="rtl"]') as $group) {
+                $group->textContent = implode('', array_reverse(TextSegmentation::graphemes($group->textContent)));
+            }
+        }
+
+        return $capsule?->textContent ?? '';
     }
 }

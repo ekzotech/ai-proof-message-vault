@@ -9,6 +9,13 @@ use Tests\Fixtures\CapsuleSamples;
 
 class TextExtractionTest extends TestCase
 {
+    public function test_bidi_aware_extraction_reverses_only_marked_groups(): void
+    {
+        $markup = '<div class="capsule-text">A <bdo dir="rtl">dlrow olleh</bdo> B</div>';
+        $this->assertSame('A dlrow olleh B', TextExtraction::readDom($markup));
+        $this->assertSame('A hello world B', TextExtraction::readDom($markup, restoreBidi: true));
+    }
+
     public function test_folding_recovers_equivalent_spelling(): void
     {
         $this->assertSame('Coco', TextExtraction::foldLookalikes('Сосо'));
