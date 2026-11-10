@@ -36,11 +36,34 @@ class SessionTest extends TestCase
     {
         User::factory()->create(['email' => 'author@example.test', 'password' => 'letters-for-tomorrow']);
 
-        $this->post(route('login'), [
-            'email' => 'author@example.test',
-            'password' => 'wrong-password',
-        ])->assertSessionHasErrors(['email' => 'Неверный адрес или пароль.']);
+        foreach (['author@example.test', 'unknown@example.test'] as $email) {
+            $this->post(route('login'), [
+                'email' => $email,
+                'password' => 'wrong-password',
+            ])->assertSessionHasErrors(['email' => 'Неверный адрес или пароль.']);
+        }
 
         $this->assertGuest();
+    }
+
+    public function test_five_failed_attempts_temporarily_block_sign_in(): void
+    {
+        User::factory()->create(['email' => 'author@example.test', 'password' => 'letters-for-tomorrow']);
+
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->post(route('login'), [
+                'email' => 'author@example.test',
+                'password' => 'wrong-password',
+            ])->assertSessionHasErrors('email');
+        }
+
+        $credentials = ['email' => 'AUTHOR@example.test', 'password' => 'letters-for-tomorrow'];
+
+        $this->post(route('login'), $credentials)->assertTooManyRequests()->assertHeader('Retry-After');
+        $this->assertGuest();
+
+        $this->travel(61)->seconds();
+        $this->post(route('login'), $credentials)->assertRedirect(route('home'));
+        $this->assertAuthenticated();
     }
 }
