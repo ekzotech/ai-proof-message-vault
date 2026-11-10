@@ -42,6 +42,7 @@ php artisan serve
 ```powershell
 php artisan test
 composer lint
+composer audit:locked
 ```
 
 ## Как читать проверку извлечения

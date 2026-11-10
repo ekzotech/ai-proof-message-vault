@@ -41,6 +41,9 @@ jobs:
           npm ci --no-audit --no-fund
           npm run build
 
+      - name: Audit locked PHP and npm dependencies
+        run: composer audit:locked
+
       - name: Check PHP formatting
         run: composer lint
 

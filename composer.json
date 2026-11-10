@@ -40,6 +40,10 @@
         ],
         "lint": "@php vendor/bin/pint --test",
         "dusk": "@php scripts/run-dusk.php",
+        "audit:locked": [
+            "@composer audit --locked --no-interaction",
+            "npm audit --audit-level=low"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"
