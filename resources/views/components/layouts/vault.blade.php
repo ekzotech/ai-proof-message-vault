@@ -10,7 +10,10 @@
     <body>
         <header class="site-header">
             <div class="page-width site-header__inner">
-                <a class="wordmark" href="{{ url('/') }}" lang="en">Message Vault</a>
+                <a class="wordmark" href="{{ route('home') }}" lang="en">Message Vault</a>
+                @guest
+                    <a class="site-header__link" href="{{ route('register') }}">Регистрация</a>
+                @endguest
             </div>
         </header>
 

@@ -61,7 +61,20 @@
 .site-header__inner {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     min-height: 4rem;
+}
+
+.site-header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.875rem;
+}
+
+.site-header__link:hover {
+    text-decoration: underline;
 }
 
 .wordmark {
@@ -141,6 +154,52 @@
 .action:disabled {
     cursor: wait;
     opacity: 0.7;
+}
+
+.auth-panel {
+    width: min(100%, 28rem);
+    padding-block: var(--section-space);
+}
+
+.auth-panel h1 {
+    font-size: clamp(2rem, 7vw, 3.2rem);
+}
+
+.auth-form {
+    display: grid;
+    justify-items: start;
+    gap: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+.auth-field {
+    display: grid;
+    gap: 0.35rem;
+    width: 100%;
+    font-weight: 600;
+}
+
+.auth-field input {
+    min-height: 44px;
+    min-width: 0;
+    padding-inline: 0.7rem;
+    border: 1px solid #b8b4a9;
+    border-radius: 5px;
+    background: var(--surface);
+    font-weight: 400;
+}
+
+.auth-hint, .auth-error {
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.auth-hint {
+    color: var(--muted);
+}
+
+.auth-error {
+    color: #9f2f2d;
 }
 
 .landing-lead {
