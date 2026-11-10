@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Capsule;
+use App\Rules\CapsuleText;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -18,8 +19,8 @@ class CapsuleDraftEditor extends Component
         Gate::authorize('create', Capsule::class);
 
         $data = $this->validate([
-            'title' => ['required', 'string', 'max:120'],
-            'body' => ['required', 'string', 'max:12000'],
+            'title' => ['bail', 'required', 'string', 'max:'.CapsuleText::MAX_TITLE, new CapsuleText],
+            'body' => ['bail', 'required', 'string', 'max:'.CapsuleText::MAX_BODY, new CapsuleText],
         ]);
         $capsule = auth()->user()->capsules()->create($data);
 

@@ -38,4 +38,19 @@ class CapsuleDraftTest extends TestCase
         $this->actingAs(User::factory()->create())->get($url)->assertForbidden()->assertDontSee($draft->body);
         $this->actingAs($draft->author)->get($url)->assertOk()->assertSee($draft->body);
     }
+
+    public function test_drafts_preserve_unicode_and_layout_but_reject_unsafe_or_oversized_text(): void
+    {
+        $author = User::factory()->create();
+        $editor = Livewire::actingAs($author)->test(CapsuleDraftEditor::class)->set('title', 'Текст');
+
+        foreach (["\u{00A0}\u{2003}", "скрыто\u{202E}направление", str_repeat('я', 12001)] as $invalid) {
+            $editor->set('body', $invalid)->call('save')->assertHasErrors('body');
+        }
+
+        $this->assertDatabaseCount('capsules', 0);
+        $body = "  Первая строка\nCafe\u{0301} и 👩‍🔬\n";
+        $editor->set('body', $body)->call('save')->assertHasNoErrors();
+        $this->assertSame($body, $author->capsules()->sole()->body);
+    }
 }
