@@ -51,4 +51,24 @@ class TransformationPipelineTest extends TestCase
         $this->expectException(LengthException::class);
         $pipeline->transform($text.'а', 'fixed-seed');
     }
+
+    public function test_multiple_fixed_seeds_keep_complex_graphemes_and_urls_intact(): void
+    {
+        $pipeline = new TransformationPipeline;
+        $text = "Здесь Cafe\u{0301} и 👨‍👩‍👧‍👦\r\nhttps://example.test/время!\n";
+
+        foreach (range(1, 12) as $number) {
+            foreach (TransformationPreset::cases() as $preset) {
+                $seed = 'edge-'.$number;
+                $segments = $pipeline->transform($text, $seed, $preset)->segments;
+                $output = implode('', array_column($segments, 'text'));
+
+                $this->assertSame($segments, $pipeline->transform($text, $seed, $preset)->segments);
+                $this->assertTrue(mb_check_encoding($output, 'UTF-8'));
+                $this->assertStringContainsString("👨‍👩‍👧‍👦\r\nhttps://example.test/время!\n", $output);
+                $this->assertStringContainsString("\u{0301}", $output);
+                $this->assertLessThanOrEqual(mb_strlen($text) + 4, mb_strlen($output));
+            }
+        }
+    }
 }
