@@ -34,7 +34,7 @@ class PasswordRecoveryTest extends TestCase
             rtrim(config('app.url'), '/').route('password.reset', ['token' => $notice->token, 'email' => $author->email], absolute: false),
             $link,
         );
-        $this->withoutVite()->get($link)->assertOk();
+        $this->withoutVite()->get($link)->assertOk()->assertHeader('Referrer-Policy', 'no-referrer');
     }
 
     public function test_a_reset_token_changes_the_password_only_once(): void

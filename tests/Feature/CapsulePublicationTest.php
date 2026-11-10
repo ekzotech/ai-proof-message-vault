@@ -74,7 +74,7 @@ class CapsulePublicationTest extends TestCase
 
         $this->travelTo($snapshot->opens_at);
         $this->withoutVite()->get(route('capsules.read', $snapshot->reader_token))
-            ->assertOk()->assertHeader('Cache-Control', 'no-store, private')
+            ->assertOk()->assertHeader('Cache-Control', 'no-store, private')->assertHeader('Referrer-Policy', 'no-referrer')
             ->assertSee('Сохранённый заголовок')->assertSee('Снимок')
             ->assertDontSee($draft->title)->assertDontSee($draft->body);
     }

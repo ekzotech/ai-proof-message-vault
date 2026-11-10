@@ -24,6 +24,10 @@ class CapsuleResponseHeaders
             $response->headers->set('X-Robots-Tag', $directives);
         }
 
+        if ($request->is('c/*', 'capsules/*', 'reset-password/*')) {
+            $response->headers->set('Referrer-Policy', 'no-referrer');
+        }
+
         return $response;
     }
 }
