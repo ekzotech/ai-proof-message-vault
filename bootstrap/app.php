@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +18,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trimStrings(except: ['components.*.updates.body']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['token', 'body']);
+        $exceptions->report(function (Throwable $exception): ?bool {
+            if (! app()->bound('request') || ! request()->is('c/*', 'capsules/*', 'livewire*/update')) {
+                return null;
+            }
+
+            Log::error('Capsule request failed.', [
+                'route' => request()->route()?->getName(),
+                'exception' => $exception::class,
+            ]);
+
+            return false;
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
