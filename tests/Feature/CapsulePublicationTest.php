@@ -18,6 +18,42 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guest_owner_and_other_author_follow_the_capsule_route_matrix(): void
+    {
+        $draft = Capsule::factory()->create();
+        $other = User::factory()->create();
+        $edit = route('capsules.edit', $draft);
+        $preview = route('capsules.preview', $draft);
+        $details = route('capsules.publication', $draft);
+        $this->withoutVite();
+
+        foreach ([$edit, $preview, $details] as $private) {
+            $this->get($private)->assertRedirect(route('login'));
+        }
+
+        $this->actingAs($draft->author)->get($edit)->assertOk();
+        $this->get($preview)->assertOk();
+        $this->get($details)->assertNotFound();
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $public = route('capsules.read', $snapshot->reader_token);
+
+        $this->get($edit)->assertForbidden();
+        $this->get($preview)->assertForbidden();
+        $this->get($details)->assertOk();
+        $this->get($public)->assertSee('Капсула ожидает открытия');
+        $this->actingAs($other)->get($details)->assertForbidden();
+        $this->get($public)->assertSee('Капсула ожидает открытия');
+
+        $this->travelTo($snapshot->opens_at);
+        $this->get($public)->assertSee('Капсула открыта');
+        $snapshot->revoked_at = now();
+        $snapshot->save();
+        $this->get($public)->assertNotFound();
+        $this->actingAs($draft->author)->get($details)->assertSee('Ссылка отозвана');
+    }
+
     public function test_the_reader_limit_recovers_after_the_window_expires(): void
     {
         $snapshot = $this->snapshot(Capsule::factory()->create());
