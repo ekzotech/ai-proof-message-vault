@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Capsules\CapsuleState;
 use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\CapsulePublication;
@@ -13,6 +14,20 @@ use Tests\TestCase;
 class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_availability_changes_at_the_utc_boundary_and_revocation_takes_priority(): void
+    {
+        $snapshot = $this->snapshot(Capsule::factory()->create());
+        $opening = $snapshot->opens_at;
+
+        $this->assertSame(CapsuleState::Draft, CapsuleState::at(null, $opening));
+        $this->assertSame(CapsuleState::Waiting, CapsuleState::at($snapshot, $opening->subSecond()));
+        $this->assertSame(CapsuleState::Open, CapsuleState::at($snapshot, $opening));
+
+        $snapshot->revoked_at = $opening->subMinute();
+        $this->assertSame(CapsuleState::Revoked, CapsuleState::at($snapshot, $opening->subSecond()));
+        $this->assertSame(CapsuleState::Revoked, CapsuleState::at($snapshot, $opening));
+    }
 
     public function test_reader_tokens_are_opaque_encrypted_and_unique(): void
     {
