@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Foundation\Vite;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,6 +23,13 @@ class CapsuleResponseHeaders
                 $directives .= ', noai, noimageai';
             }
             $response->headers->set('X-Robots-Tag', $directives);
+
+            if (! app()->isLocal() || ! app(Vite::class)->isRunningHot()) {
+                $response->headers->set(
+                    'Content-Security-Policy',
+                    "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+                );
+            }
         }
 
         if ($request->is('c/*', 'capsules/*', 'reset-password/*')) {

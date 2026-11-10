@@ -110,6 +110,7 @@ class CapsulePublicationTest extends TestCase
 
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
         $response->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        $response->assertHeader('Content-Security-Policy', "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
         config(['capsules.request_no_ai' => true]);
         $this->get(route('capsules.read', $snapshot->reader_token))
             ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, noai, noimageai');
