@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -13,6 +15,7 @@ class RegistrationTest extends TestCase
 
     public function test_an_author_can_register_and_is_signed_in(): void
     {
+        Notification::fake();
         $this->withoutVite()->get(route('register'))->assertOk();
 
         $this->post(route('register'), [
@@ -20,11 +23,12 @@ class RegistrationTest extends TestCase
             'email' => 'Author@example.test',
             'password' => 'letters-for-tomorrow',
             'password_confirmation' => 'letters-for-tomorrow',
-        ])->assertRedirect(route('home'));
+        ])->assertRedirect(route('verification.notice'));
 
         $user = User::where('email', 'author@example.test')->sole();
 
         $this->assertAuthenticatedAs($user);
+        Notification::assertSentTo($user, VerifyEmail::class);
         $this->assertTrue(Hash::check('letters-for-tomorrow', $user->password));
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Rules\NewPassword;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,8 @@ class RegisterController
         }
 
         Auth::login($user);
+        event(new Registered($user));
 
-        return redirect()->route('home');
+        return redirect()->route('verification.notice');
     }
 }

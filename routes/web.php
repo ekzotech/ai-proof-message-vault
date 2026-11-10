@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
@@ -20,4 +21,11 @@ Route::middleware('guest')->group(function (): void {
         ->middleware('throttle:10,1')->name('password.update');
 });
 
-Route::post('/logout', [SessionController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::middleware('auth')->group(function (): void {
+    Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
+    Route::view('/verify-email', 'auth.verify-email')->name('verification.notice');
+    Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware('signed:relative')->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1')->name('verification.send');
+});
