@@ -13,6 +13,14 @@ use Illuminate\Validation\Rule;
 
 class CapsulePublicationController
 {
+    public function revoke(Capsule $capsule): RedirectResponse
+    {
+        $publication = $capsule->publication()->firstOrFail();
+        $capsule->publication()->whereKey($publication->id)->whereNull('revoked_at')->update(['revoked_at' => now()]);
+
+        return redirect()->route('capsules.publication', $capsule);
+    }
+
     public function show(Capsule $capsule): Response
     {
         $publication = $capsule->publication()->firstOrFail();

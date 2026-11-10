@@ -17,6 +17,23 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_revoking_a_link_hides_it_and_makes_it_unavailable(): void
+    {
+        $draft = Capsule::factory()->create();
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $link = route('capsules.read', $snapshot->reader_token);
+        $revoke = route('capsules.revoke', $draft);
+
+        $this->withoutVite()->get($link)->assertOk();
+        $this->actingAs(User::factory()->create())->patch($revoke)->assertForbidden();
+        $this->actingAs($draft->author)->patch($revoke)->assertRedirect(route('capsules.publication', $draft));
+        $this->get($link)->assertNotFound();
+        $this->get(route('capsules.read', str_repeat('0', 48)))->assertNotFound();
+        $this->get(route('capsules.publication', $draft))->assertSee('Ссылка отозвана')->assertDontSee($snapshot->reader_token);
+    }
+
     public function test_only_the_author_can_retrieve_the_reader_link_from_the_dashboard(): void
     {
         $draft = Capsule::factory()->create();

@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('verified')->can('publish', 'capsule')->name('capsules.publish');
     Route::get('/capsules/{capsule}/publication', [CapsulePublicationController::class, 'show'])
         ->can('view', 'capsule')->name('capsules.publication');
+    Route::patch('/capsules/{capsule}/revoke', [CapsulePublicationController::class, 'revoke'])
+        ->can('view', 'capsule')->name('capsules.revoke');
     Route::view('/profile', 'profile')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');

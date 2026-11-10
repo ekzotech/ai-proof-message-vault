@@ -19,6 +19,11 @@
                 ">Копировать ссылку</button>
                 <p role="status" x-text="message"></p>
             </div>
+            <form method="post" action="{{ route('capsules.revoke', $capsule) }}">
+                @csrf
+                @method('PATCH')
+                <button class="action" type="submit">Отозвать ссылку</button>
+            </form>
         @endif
         <p><a class="underline" href="{{ route('dashboard') }}">В кабинет</a></p>
     </section>
