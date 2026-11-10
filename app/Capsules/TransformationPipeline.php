@@ -2,15 +2,16 @@
 
 namespace App\Capsules;
 
+use Random\Engine\Xoshiro256StarStar;
 use Random\Randomizer;
 
 class TransformationPipeline
 {
     public const VERSION = 1;
 
-    public function transform(string $text, ?Randomizer $random = null): TransformationResult
+    public function transform(string $text, string $seed): TransformationResult
     {
-        $random ??= new Randomizer;
+        $random = new Randomizer(new Xoshiro256StarStar(hash('sha256', $seed, binary: true)));
         $chunks = TextSegmentation::chunks($text);
         $segments = [];
         $plain = '';

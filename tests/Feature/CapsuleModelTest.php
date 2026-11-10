@@ -12,6 +12,16 @@ class CapsuleModelTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_new_drafts_have_distinct_persistent_transformation_seeds(): void
+    {
+        $draft = Capsule::factory()->create();
+        $other = Capsule::factory()->create();
+
+        $this->assertSame(32, strlen($draft->transformation_seed));
+        $this->assertSame($draft->transformation_seed, $draft->fresh()->transformation_seed);
+        $this->assertNotSame($draft->transformation_seed, $other->transformation_seed);
+    }
+
     public function test_the_database_stores_ciphertext_and_the_model_reads_the_original(): void
     {
         $message = "Капсула для будущего.\nЗаписка остаётся читаемой.";
