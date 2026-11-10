@@ -13,6 +13,7 @@ class LandingTest extends TestCase
             ->get('/')
             ->assertOk()
             ->assertSee('Капсула времени для текста')
+            ->assertSee('Создать капсулу')->assertSee(route('register'))
             ->assertSee('Восстановление текста остаётся возможным.')
             ->assertSeeLivewire(CapsuleExample::class);
     }

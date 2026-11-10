@@ -362,6 +362,21 @@ button.site-header__link {
     font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
+.landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+}
+
+.landing-secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
 .landing-guide {
     padding-block: 2rem var(--section-space);
     border-top: 1px solid var(--line);

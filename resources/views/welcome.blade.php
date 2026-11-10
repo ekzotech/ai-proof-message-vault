@@ -6,7 +6,10 @@
             <p class="landing-summary">
                 Оставьте письмо, воспоминание или манифест для будущего. Ссылка откроет текст в назначенный день.
             </p>
-            <a class="action" href="#capsule-example">Посмотреть пример</a>
+            <div class="landing-actions">
+                <a class="action" href="{{ auth()->check() ? route('capsules.create') : route('register') }}">Создать капсулу</a>
+                <a class="landing-secondary" href="#capsule-example">Посмотреть пример</a>
+            </div>
         </section>
 
         <livewire:capsule-example />
