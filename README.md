@@ -27,13 +27,15 @@ if (!(Test-Path .env)) {
     Copy-Item .env.example .env
     php artisan key:generate
 }
-php artisan migrate
+composer db:init
 npm.cmd ci
 npm.cmd run build
 php artisan serve
 ```
 
 Откройте <http://127.0.0.1:8000>. Проверка доступности находится по адресу <http://127.0.0.1:8000/up>.
+
+`composer db:init` создаёт локальный файл SQLite при первом запуске и применяет новые миграции при повторных вызовах. Файл базы и `.env` исключены из Git.
 
 ```powershell
 php artisan test
