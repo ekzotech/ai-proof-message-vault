@@ -64,7 +64,7 @@ class AuthorFlowTest extends DuskTestCase
         $email = 'dusk-registration@example.test';
 
         $this->browse(function (Browser $browser) use ($email): void {
-            $browser->visit('/register')
+            $browser->logout()->visit('/register')
                 ->type('name', 'Тестовый автор')
                 ->type('email', $email)
                 ->type('password', 'letters-for-tomorrow')

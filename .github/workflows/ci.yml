@@ -49,3 +49,17 @@ jobs:
           cp .env.example .env
           php artisan key:generate --no-interaction
           composer test
+
+      - name: Install matching ChromeDriver
+        run: |
+          google-chrome --version
+          php artisan dusk:chrome-driver --detect
+
+      - name: Run Dusk against isolated fixtures
+        id: dusk
+        run: composer dusk
+
+      - name: Count browser diagnostics without publishing their contents
+        if: failure() && steps.dusk.outcome == 'failure'
+        run: |
+          find tests/Browser/screenshots tests/Browser/source tests/Browser/console -type f ! -name .gitignore | wc -l

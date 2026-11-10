@@ -49,8 +49,15 @@ abstract class DuskTestCase extends BaseTestCase
 
         return RemoteWebDriver::create(
             'http://127.0.0.1:'.getenv('VAULT_DUSK_DRIVER_PORT'),
-            DesiredCapabilities::chrome()->setCapability(ChromeOptions::CAPABILITY, $options),
+            DesiredCapabilities::chrome()
+                ->setCapability(ChromeOptions::CAPABILITY, $options)
+                ->setCapability('goog:loggingPrefs', ['browser' => 'ALL']),
         );
+    }
+
+    protected function storeSourceLogsFor($browsers): void
+    {
+        $browsers->each(fn (Browser $browser, int $index) => $browser->storeSource($this->getCallerName().'-'.$index));
     }
 
     protected function publishFixture(string $original, array $segments, string $title = 'Браузерная капсула'): CapsulePublication

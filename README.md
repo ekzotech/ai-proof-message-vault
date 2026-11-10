@@ -77,3 +77,5 @@ composer dusk
 ```
 
 Если переносимый PHP на Windows не доверяет центру сертификации при загрузке, скачайте соответствующий ChromeDriver из [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/) и поместите распакованный `chromedriver.exe` в `vendor/laravel/dusk/bin/chromedriver-win.exe`. Тестовый запуск использует временную SQLite, случайный ключ и отдельный порт. Почта остаётся в памяти тестового процесса.
+
+При локальном сбое Dusk оставляет снимки и HTML в `tests/Browser`. В GitHub Actions выполняются те же тесты, а отчёт содержит количество файлов диагностики.
