@@ -5,10 +5,22 @@ namespace Tests\Unit;
 use App\Capsules\TransformationPipeline;
 use App\Capsules\TransformationPreset;
 use LengthException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
+use Tests\Fixtures\CapsuleSamples;
 
 class TransformationPipelineTest extends TestCase
 {
+    #[DataProviderExternal(CapsuleSamples::class, 'originals')]
+    public function test_the_pipeline_handles_the_extraction_corpus(string $original): void
+    {
+        $result = (new TransformationPipeline)->transform($original, 'corpus-seed');
+        $extracted = implode('', array_column($result->segments, 'text'));
+
+        $this->assertTrue(mb_check_encoding($extracted, 'UTF-8'));
+        $this->assertGreaterThanOrEqual(mb_strlen($original), mb_strlen($extracted));
+    }
+
     public function test_the_pipeline_returns_versioned_segments_and_preserves_urls_and_emoji(): void
     {
         $text = str_repeat('письмо миру hello world ', 10)."https://example.test/слово 👩‍🔬\n";
