@@ -37,6 +37,7 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite') || exit(1);\"",
             "@php artisan migrate --no-interaction"
         ],
+        "lint": "@php vendor/bin/pint --test",
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"

@@ -39,4 +39,5 @@ php artisan serve
 
 ```powershell
 php artisan test
+composer lint
 ```
