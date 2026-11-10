@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 #[Fillable(['title', 'body', 'opens_at'])]
@@ -34,5 +35,10 @@ class Capsule extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function publication(): HasOne
+    {
+        return $this->hasOne(CapsulePublication::class);
     }
 }
