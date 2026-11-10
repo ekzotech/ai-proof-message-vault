@@ -6,11 +6,24 @@ use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_sqlite_uses_the_author_and_sorting_index_for_the_dashboard(): void
+    {
+        $author = User::factory()->create();
+        Capsule::factory()->count(24)->for($author, 'author')->create();
+        $query = $author->capsules()->whereDoesntHave('publication')
+            ->latest('updated_at')->orderByDesc('id')->limit(12)->select(['id', 'title'])->toBase();
+        $plan = collect(DB::select('EXPLAIN QUERY PLAN '.$query->toSql(), $query->getBindings()))->pluck('detail')->join(' ');
+
+        $this->assertStringContainsString('capsules_author_updated_id_index', $plan);
+        $this->assertStringNotContainsString('TEMP B-TREE FOR ORDER BY', $plan);
+    }
 
     public function test_the_filter_keeps_only_the_requested_capsule_state(): void
     {
