@@ -264,6 +264,25 @@ button.site-header__link {
     font-weight: 650;
 }
 
+.extraction-report {
+    padding: 0.8rem 0;
+    border-block: 1px solid var(--line);
+}
+
+.extraction-report summary {
+    min-height: 44px;
+    padding-block: 0.5rem;
+    cursor: pointer;
+}
+
+.extraction-report dl > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding-block: 0.3rem;
+}
+
 .draft-list {
     display: grid;
     gap: 0.8rem;

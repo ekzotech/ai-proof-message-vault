@@ -21,6 +21,9 @@ class CapsulePreviewTest extends TestCase
         $response = $this->actingAs($draft->author)->get($url)->assertOk()
             ->assertSee('Последняя сохранённая версия')
             ->assertSee('capsule-text')
+            ->assertSee('Все методы вместе')
+            ->assertSee('Совпало')
+            ->assertSee('Различается')
             ->assertDontSee($draft->body);
 
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));

@@ -19,6 +19,19 @@
             <x-capsules.segments :segments="$preview->segments" />
         </article>
 
+        <details class="extraction-report">
+            <summary>Проверка извлечения текста</summary>
+            <p class="auth-hint">Оба текста проходят одинаковую нормализацию. «Совпало» означает равенство после выбранной обработки.</p>
+            <dl>
+                @foreach ($extraction as $method => $matches)
+                    <div>
+                        <dt>{{ \App\Capsules\ExtractionReport::LABELS[$method] }}</dt>
+                        <dd>{{ $matches ? 'Совпало' : 'Различается' }}</dd>
+                    </div>
+                @endforeach
+            </dl>
+        </details>
+
         <p><a class="underline" href="{{ route('capsules.edit', $capsule) }}">Вернуться к редактору</a></p>
     </section>
 </x-layouts.vault>
