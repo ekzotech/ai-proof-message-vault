@@ -25,6 +25,7 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::view('/capsules/create', 'capsules.create')->can('create', Capsule::class)->name('capsules.create');
     Route::get('/capsules/{capsule}/edit', fn (Capsule $capsule) => view('capsules.edit', compact('capsule')))
         ->can('update', 'capsule')->name('capsules.edit');
     Route::view('/profile', 'profile')->name('profile.edit');

@@ -7,6 +7,11 @@ use App\Models\User;
 
 class CapsulePolicy
 {
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
     public function view(User $user, Capsule $capsule): bool
     {
         return $user->getKey() === $capsule->author_id;

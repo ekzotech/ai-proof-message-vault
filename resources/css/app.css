@@ -202,7 +202,7 @@ button.site-header__link {
     font-weight: 600;
 }
 
-.auth-field input, .auth-field select {
+.auth-field input, .auth-field select, .auth-field textarea {
     min-height: 44px;
     min-width: 0;
     max-width: 100%;
@@ -211,6 +211,15 @@ button.site-header__link {
     border-radius: 5px;
     background: var(--surface);
     font-weight: 400;
+}
+
+.auth-field textarea {
+    padding-block: 0.6rem;
+    resize: vertical;
+}
+
+.capsule-editor {
+    width: min(100%, 42rem);
 }
 
 .auth-hint, .auth-error {
