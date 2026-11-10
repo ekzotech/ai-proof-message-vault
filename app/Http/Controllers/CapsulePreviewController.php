@@ -22,7 +22,6 @@ class CapsulePreviewController
         $markup = Blade::render('<x-capsules.segments :segments="$segments" />', ['segments' => $preview->segments]);
         $extraction = ExtractionReport::measure($capsule->body, $markup);
 
-        return response()->view('capsules.preview', compact('capsule', 'preview', 'preset', 'extraction'))
-            ->header('Cache-Control', 'private, no-store');
+        return response()->view('capsules.preview', compact('capsule', 'preview', 'preset', 'extraction'));
     }
 }

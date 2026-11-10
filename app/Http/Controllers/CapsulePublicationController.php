@@ -28,8 +28,7 @@ class CapsulePublicationController
         $readerUrl = $state === CapsuleState::Revoked ? null : rtrim(config('app.url'), '/')
             .route('capsules.read', ['token' => $publication->reader_token], absolute: false);
 
-        return response()->view('capsules.publication', compact('capsule', 'publication', 'state', 'readerUrl'))
-            ->header('Cache-Control', 'private, no-store');
+        return response()->view('capsules.publication', compact('capsule', 'publication', 'state', 'readerUrl'));
     }
 
     public function store(Request $request, Capsule $capsule, PublishCapsule $publisher): RedirectResponse

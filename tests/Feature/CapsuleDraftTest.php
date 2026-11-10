@@ -39,7 +39,8 @@ class CapsuleDraftTest extends TestCase
 
         $this->withoutVite()->get($url)->assertRedirect(route('login'));
         $this->actingAs(User::factory()->create())->get($url)->assertForbidden()->assertDontSee($draft->body);
-        $this->actingAs($draft->author)->get($url)->assertOk()->assertSee($draft->body);
+        $this->actingAs($draft->author)->get($url)->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private')->assertSee($draft->body);
     }
 
     public function test_drafts_preserve_unicode_and_layout_but_reject_unsafe_or_oversized_text(): void
