@@ -16,6 +16,14 @@ class CapsuleResponseHeaders
             $response->headers->set('Cache-Control', 'private, no-store');
         }
 
+        if ($request->is('c/*')) {
+            $directives = 'noindex, nofollow, noarchive';
+            if (config('capsules.request_no_ai')) {
+                $directives .= ', noai, noimageai';
+            }
+            $response->headers->set('X-Robots-Tag', $directives);
+        }
+
         return $response;
     }
 }

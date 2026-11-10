@@ -93,6 +93,10 @@ class CapsulePublicationTest extends TestCase
             ->assertDontSee($draft->body)->assertDontSee('wire:snapshot');
 
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $response->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        config(['capsules.request_no_ai' => true]);
+        $this->get(route('capsules.read', $snapshot->reader_token))
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, noai, noimageai');
     }
 
     public function test_publication_requires_a_verified_author_and_an_attestation(): void
