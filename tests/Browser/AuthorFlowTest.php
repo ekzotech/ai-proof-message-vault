@@ -9,6 +9,32 @@ use Tests\DuskTestCase;
 
 class AuthorFlowTest extends DuskTestCase
 {
+    public function test_an_author_corrects_an_error_edits_a_draft_and_previews_it(): void
+    {
+        $author = User::factory()->create();
+
+        $this->browse(function (Browser $browser) use ($author): void {
+            $browser->loginAs($author)->visit('/capsules/create')
+                ->type('#capsule-title', 'Письмо из браузера')
+                ->type('#capsule-body', ' ')
+                ->press('Сохранить черновик')
+                ->waitFor('#capsule-body-error')
+                ->assertInputValue('#capsule-title', 'Письмо из браузера')
+                ->type('#capsule-body', 'Первая версия послания.')
+                ->press('Сохранить черновик')
+                ->waitForText('Редактировать послание')
+                ->type('#capsule-body', 'Текст для будущего читателя.')
+                ->press('Сохранить черновик')
+                ->waitForText('Черновик сохранён.')
+                ->clickLink('Предпросмотр сохранённого текста')
+                ->waitFor('.capsule-text')
+                ->assertSee('Письмо из браузера')
+                ->assertDontSeeIn('.capsule-text', 'Текст для будущего читателя.');
+
+            $this->assertSame('Текст для будущего читателя.', $author->capsules()->sole()->body);
+        });
+    }
+
     public function test_an_author_registers_confirms_email_and_opens_the_dashboard(): void
     {
         $email = 'dusk-registration@example.test';
