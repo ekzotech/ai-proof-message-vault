@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\Capsule;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Laravel\Dusk\Browser;
@@ -9,6 +10,29 @@ use Tests\DuskTestCase;
 
 class AuthorFlowTest extends DuskTestCase
 {
+    public function test_a_separate_reader_session_waits_until_the_scheduled_opening(): void
+    {
+        $draft = Capsule::factory()->create([
+            'title' => 'Письмо с расписанием',
+            'body' => 'Отложенное браузерное послание.',
+            'opens_at' => now()->addHour(),
+        ]);
+
+        $this->browse(function (Browser $author, Browser $guest) use ($draft): void {
+            $author->loginAs($draft->author)->visitRoute('capsules.preview', $draft)
+                ->check('author_attested')->press('Запечатать и опубликовать')
+                ->waitForLocation('/dashboard');
+
+            $publication = $draft->publication()->sole();
+            $link = route('capsules.read', $publication->reader_token);
+            $guest->visit($link)->waitForText('Капсула ожидает открытия')
+                ->assertDontSee($draft->title)->assertDontSee($draft->body);
+
+            $publication->forceFill(['opens_at' => now()->subSecond()])->save();
+            $guest->refresh()->waitForText($draft->title)->assertPresent('.capsule-text');
+        });
+    }
+
     public function test_an_author_corrects_an_error_edits_a_draft_and_previews_it(): void
     {
         $author = User::factory()->create();
