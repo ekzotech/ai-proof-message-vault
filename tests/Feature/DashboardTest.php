@@ -32,7 +32,8 @@ class DashboardTest extends TestCase
         $last = $drafts->last();
 
         $this->withoutVite()->actingAs($author)->get(route('dashboard'))
-            ->assertSee($last->title)->assertDontSee($first->title)->assertDontSee($foreign->title);
+            ->assertSee($last->title)->assertSee('Черновик')->assertSee('capsule-list-meta')
+            ->assertDontSee($first->title)->assertDontSee($foreign->title);
 
         $this->get(route('dashboard', ['page' => 2]))
             ->assertSee($first->title)->assertDontSee($last->title)->assertDontSee($foreign->title);

@@ -315,6 +315,24 @@ button.site-header__link {
     font-size: 0.875rem;
 }
 
+.capsule-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+}
+
+@media (min-width: 42rem) {
+    .draft-list li {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+    }
+
+    .capsule-list-meta {
+        justify-content: flex-end;
+    }
+}
+
 .auth-hint, .auth-error {
     font-size: 0.875rem;
     font-weight: 400;

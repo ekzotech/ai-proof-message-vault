@@ -22,11 +22,14 @@
                     @foreach ($drafts as $draft)
                         <li>
                             <a class="underline" href="{{ route('capsules.edit', $draft) }}">{{ $draft->title }}</a>
-                            @if ($draft->opens_at)
-                                <time datetime="{{ $draft->opens_at->toIso8601String() }}">
-                                    {{ $draft->opens_at->setTimezone(auth()->user()->timezone)->format('d.m.Y H:i T') }}
-                                </time>
-                            @endif
+                            <div class="capsule-list-meta">
+                                <span class="status-label">Черновик</span>
+                                @if ($draft->opens_at)
+                                    <time datetime="{{ $draft->opens_at->toIso8601String() }}">
+                                        {{ $draft->opens_at->setTimezone(auth()->user()->timezone)->format('d.m.Y H:i T') }}
+                                    </time>
+                                @endif
+                            </div>
                         </li>
                     @endforeach
                 </ul>
@@ -42,7 +45,12 @@
                     @foreach ($published as $capsule)
                         <li>
                             <a class="underline" href="{{ route('capsules.publication', $capsule) }}">{{ $capsule->title }}</a>
-                            <p class="auth-hint">{{ \App\Capsules\CapsuleState::at($capsule->publication, now())->label() }}</p>
+                            <div class="capsule-list-meta">
+                                <span class="status-label">{{ \App\Capsules\CapsuleState::at($capsule->publication, now())->label() }}</span>
+                                <time datetime="{{ $capsule->publication->opens_at->toIso8601String() }}">
+                                    {{ $capsule->publication->opens_at->setTimezone(auth()->user()->timezone)->format('d.m.Y H:i T') }}
+                                </time>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
