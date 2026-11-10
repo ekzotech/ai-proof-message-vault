@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\CapsulePreviewController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Capsule;
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function (): void {
     Route::view('/capsules/create', 'capsules.create')->can('create', Capsule::class)->name('capsules.create');
     Route::get('/capsules/{capsule}/edit', fn (Capsule $capsule) => view('capsules.edit', compact('capsule')))
         ->can('update', 'capsule')->name('capsules.edit');
+    Route::get('/capsules/{capsule}/preview', CapsulePreviewController::class)
+        ->can('view', 'capsule')->name('capsules.preview');
     Route::view('/profile', 'profile')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');

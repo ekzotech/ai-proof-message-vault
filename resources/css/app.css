@@ -231,6 +231,22 @@ button.site-header__link {
     white-space: nowrap;
 }
 
+.capsule-preview {
+    display: grid;
+    gap: 1rem;
+}
+
+.capsule-preview h1 {
+    overflow-wrap: anywhere;
+}
+
+.capsule-preview__sheet {
+    padding: clamp(1rem, 4vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
 .draft-list {
     display: grid;
     gap: 0.8rem;
