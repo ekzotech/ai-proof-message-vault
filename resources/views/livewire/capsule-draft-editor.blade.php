@@ -6,7 +6,11 @@
     <div class="auth-field">
         <label for="capsule-title">Заголовок</label>
         <input id="capsule-title" wire:model="title" value="{{ $title }}" required
-            @error('title') aria-invalid="true" aria-describedby="capsule-title-error" @enderror>
+            aria-describedby="capsule-title-count @error('title') capsule-title-error @enderror"
+            @error('title') aria-invalid="true" @enderror>
+        <p class="auth-hint" id="capsule-title-count">
+            Символов <span x-text="Array.from($wire.title).length">{{ mb_strlen($title) }}</span> из {{ \App\Rules\CapsuleText::MAX_TITLE }}
+        </p>
         @error('title')
             <p class="auth-error" id="capsule-title-error" role="alert">{{ $message }}</p>
         @enderror
@@ -15,7 +19,11 @@
     <div class="auth-field">
         <label for="capsule-body">Текст послания</label>
         <textarea id="capsule-body" wire:model="body" rows="8" required
-            @error('body') aria-invalid="true" aria-describedby="capsule-body-error" @enderror>{{ $body }}</textarea>
+            aria-describedby="capsule-body-count @error('body') capsule-body-error @enderror"
+            @error('body') aria-invalid="true" @enderror>{{ $body }}</textarea>
+        <p class="auth-hint" id="capsule-body-count">
+            Символов <span x-text="Array.from($wire.body).length">{{ mb_strlen($body) }}</span> из {{ \App\Rules\CapsuleText::MAX_BODY }}
+        </p>
         @error('body')
             <p class="auth-error" id="capsule-body-error" role="alert">{{ $message }}</p>
         @enderror

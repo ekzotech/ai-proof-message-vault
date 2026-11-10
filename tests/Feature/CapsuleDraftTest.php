@@ -17,7 +17,10 @@ class CapsuleDraftTest extends TestCase
     {
         $author = User::factory()->create();
         $this->withoutVite()->get(route('capsules.create'))->assertRedirect(route('login'));
-        $this->actingAs($author)->get(route('capsules.create'))->assertSeeLivewire(CapsuleDraftEditor::class);
+        $this->actingAs($author)->get(route('capsules.create'))
+            ->assertSeeLivewire(CapsuleDraftEditor::class)
+            ->assertSee('из 12000')
+            ->assertSee('из 120');
 
         $editor = Livewire::test(CapsuleDraftEditor::class)
             ->set('title', 'Письмо из прошлого')
