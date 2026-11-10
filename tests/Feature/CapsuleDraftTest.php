@@ -34,6 +34,7 @@ class CapsuleDraftTest extends TestCase
         $this->withoutVite()->get(route('capsules.create'))->assertRedirect(route('login'));
         $this->actingAs($author)->get(route('capsules.create'))
             ->assertSeeLivewire(CapsuleDraftEditor::class)
+            ->assertSee('Заголовок капсулы')
             ->assertSee('из 12000')
             ->assertSee('из 120');
 

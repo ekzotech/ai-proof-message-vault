@@ -1,4 +1,4 @@
-<form class="auth-form" wire:submit="save">
+<form class="auth-form draft-form" wire:submit="save">
     @error('creationLimit')
         <p class="auth-error" role="alert">{{ $message }}</p>
     @enderror
@@ -8,7 +8,7 @@
     @enderror
 
     <div class="auth-field">
-        <label for="capsule-title">Заголовок</label>
+        <label for="capsule-title">Заголовок капсулы</label>
         <input id="capsule-title" wire:model="title" value="{{ $title }}" required
             aria-describedby="capsule-title-count @error('title') capsule-title-error @enderror"
             @error('title') aria-invalid="true" @enderror>
