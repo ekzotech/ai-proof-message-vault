@@ -1,7 +1,8 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 
+@source '../views';
+@source '../js';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
 
 :root {
     --canvas: #f7f6f3;
