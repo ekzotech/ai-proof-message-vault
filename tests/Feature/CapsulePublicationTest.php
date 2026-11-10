@@ -6,6 +6,7 @@ use App\Capsules\CapsuleState;
 use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\CapsulePublication;
+use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,36 @@ use Tests\TestCase;
 class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_publishing_is_atomic_and_idempotent_and_locks_the_draft(): void
+    {
+        $draft = Capsule::factory()->create(['opens_at' => now()->addHour()]);
+        $url = route('capsules.publish', $draft);
+        $data = ['version' => 0, 'preset' => 'experimental', 'author_attested' => '1'];
+
+        $this->actingAs(User::factory()->create())->post($url, $data)->assertForbidden();
+        $this->actingAs($draft->author)->post($url, [...$data, 'version' => 5])->assertSessionHasErrors('version');
+        $this->assertDatabaseCount('capsule_publications', 0);
+        $this->post($url, $data)->assertRedirect(route('dashboard'));
+        $first = $draft->publication()->sole();
+        $this->post($url, $data)->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseCount('capsule_publications', 1);
+        $this->assertSame($first->reader_token, $draft->publication()->sole()->reader_token);
+        $this->assertSame(1, $draft->fresh()->lock_version);
+        $this->withoutVite()->get(route('capsules.edit', $draft))->assertForbidden();
+    }
+
+    public function test_failed_publication_does_not_change_the_draft_version(): void
+    {
+        $draft = Capsule::factory()->create(['opens_at' => now()->subMinute()]);
+        $this->actingAs($draft->author)->post(route('capsules.publish', $draft), [
+            'version' => 0, 'preset' => 'gentle', 'author_attested' => '1',
+        ])->assertSessionHasErrors('opens_at');
+
+        $this->assertSame(0, $draft->fresh()->lock_version);
+        $this->assertDatabaseCount('capsule_publications', 0);
+    }
 
     public function test_availability_changes_at_the_utc_boundary_and_revocation_takes_priority(): void
     {

@@ -10,6 +10,7 @@ class DashboardController
     public function __invoke(Request $request): View
     {
         $drafts = $request->user()->capsules()
+            ->whereDoesntHave('publication')
             ->latest('updated_at')
             ->orderByDesc('id')
             ->paginate(12, ['id', 'title', 'opens_at', 'updated_at']);

@@ -19,6 +19,11 @@ class CapsulePolicy
 
     public function update(User $user, Capsule $capsule): bool
     {
-        return $this->view($user, $capsule);
+        return $this->view($user, $capsule) && ! $capsule->publication()->exists();
+    }
+
+    public function publish(User $user, Capsule $capsule): bool
+    {
+        return $this->view($user, $capsule) && $user->hasVerifiedEmail();
     }
 }

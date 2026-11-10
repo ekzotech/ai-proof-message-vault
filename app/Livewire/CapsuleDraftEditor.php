@@ -81,6 +81,7 @@ class CapsuleDraftEditor extends Component
             $updated = auth()->user()->capsules()
                 ->whereKey($capsule->id)
                 ->where('lock_version', $this->version)
+                ->whereDoesntHave('publication')
                 ->update([...$capsule->getDirty(), 'lock_version' => $this->version + 1]);
 
             if ($updated !== 1) {
