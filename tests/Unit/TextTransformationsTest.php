@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Capsules\BidiWordGroup;
 use App\Capsules\Homoglyphs;
 use App\Capsules\ZeroWidthSpaces;
 use PHPUnit\Framework\TestCase;
@@ -31,5 +32,14 @@ class TextTransformationsTest extends TestCase
         $this->assertStringEndsWith("e\u{0301}", $result);
         $this->assertSame('https://example.test/слово', ZeroWidthSpaces::insert('https://example.test/слово', $random));
         $this->assertSame("👩‍🔬\n", ZeroWidthSpaces::insert("👩‍🔬\n", $random));
+    }
+
+    public function test_only_unambiguous_short_ltr_groups_are_reversed(): void
+    {
+        $this->assertSame('рим лема', BidiWordGroup::reverse('амел мир'));
+        $this->assertSame('dlrow olleh', BidiWordGroup::reverse('hello world'));
+        $this->assertNull(BidiWordGroup::reverse('hello, world'));
+        $this->assertNull(BidiWordGroup::reverse("hello\nworld"));
+        $this->assertNull(BidiWordGroup::reverse('hello мир🙂'));
     }
 }

@@ -222,6 +222,15 @@ button.site-header__link {
     width: min(100%, 42rem);
 }
 
+.capsule-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.capsule-text bdo {
+    white-space: nowrap;
+}
+
 .draft-list {
     display: grid;
     gap: 0.8rem;
