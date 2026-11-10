@@ -42,6 +42,7 @@ class PublishCapsule
                 'seed' => $current->transformation_seed,
                 'preset' => $preset,
                 'segments' => $result->segments,
+                'accessible_text' => $current->body,
                 'author_attested' => true,
             ]);
             $publication->issueReaderToken();

@@ -18,6 +18,21 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_accessible_text_is_frozen_and_still_subject_to_the_opening_time(): void
+    {
+        $draft = Capsule::factory()->create(['body' => 'Исходное доступное послание']);
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $url = route('capsules.read', ['token' => $snapshot->reader_token, 'view' => 'plain']);
+        $draft->update(['body' => 'Изменённый источник']);
+
+        $this->withoutVite()->get($url)->assertOk()->assertDontSee('Исходное доступное послание');
+        $this->travelTo($snapshot->opens_at);
+        $this->get($url)->assertOk()->assertSee('Исходное доступное послание')->assertDontSee('Изменённый источник');
+        $this->assertStringNotContainsString('Исходное доступное послание', $snapshot->getRawOriginal('accessible_text'));
+    }
+
     public function test_a_locked_capsule_does_not_expose_source_snapshot_or_token_in_the_response(): void
     {
         $draft = Capsule::factory()->create(['title' => 'Unique draft title', 'body' => 'Unique private original']);
@@ -272,6 +287,7 @@ class CapsulePublicationTest extends TestCase
             'seed' => $draft->transformation_seed,
             'preset' => TransformationPreset::Gentle,
             'segments' => [['kind' => 'text', 'text' => 'Снимок']],
+            'accessible_text' => $draft->body,
         ]);
     }
 }

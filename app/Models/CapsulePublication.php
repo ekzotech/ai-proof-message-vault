@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['title', 'opens_at', 'algorithm_version', 'seed', 'preset', 'segments', 'author_attested'])]
-#[Hidden(['seed', 'segments', 'reader_token', 'reader_token_hash'])]
+#[Fillable(['title', 'opens_at', 'algorithm_version', 'seed', 'preset', 'segments', 'author_attested', 'accessible_text'])]
+#[Hidden(['seed', 'segments', 'reader_token', 'reader_token_hash', 'accessible_text'])]
 class CapsulePublication extends Model
 {
     protected function casts(): array
@@ -19,6 +19,7 @@ class CapsulePublication extends Model
             'revoked_at' => 'immutable_datetime',
             'preset' => TransformationPreset::class,
             'segments' => 'encrypted:array',
+            'accessible_text' => 'encrypted',
             'reader_token' => 'encrypted',
             'author_attested' => 'boolean',
         ];
