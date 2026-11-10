@@ -46,4 +46,13 @@ class RegistrationTest extends TestCase
         $this->assertGuest();
         $this->assertDatabaseCount('users', 1);
     }
+
+    public function test_russian_locale_translates_validation_and_verification_email(): void
+    {
+        $this->app->setLocale('ru');
+
+        $this->post(route('register'), [])->assertSessionHasErrors(['name' => 'Заполните поле «Имя».']);
+        $author = User::factory()->unverified()->create();
+        $this->assertSame('Подтвердите адрес электронной почты', (new VerifyEmail)->toMail($author)->subject);
+    }
 }
