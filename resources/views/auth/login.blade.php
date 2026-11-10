@@ -24,6 +24,7 @@
             </div>
 
             <button class="action" type="submit">Войти</button>
+            <a class="underline" href="{{ route('password.request') }}">Забыли пароль?</a>
         </form>
     </section>
 </x-layouts.vault>
