@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\CapsulePublication;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,6 +13,25 @@ use Tests\TestCase;
 class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_reader_tokens_are_opaque_encrypted_and_unique(): void
+    {
+        $first = $this->snapshot(Capsule::factory()->create());
+        $first->issueReaderToken();
+        $first->save();
+        $second = $this->snapshot(Capsule::factory()->create());
+        $second->issueReaderToken();
+
+        $this->assertMatchesRegularExpression('/\A[a-f0-9]{48}\z/', $first->reader_token);
+        $this->assertNotSame($first->reader_token, $second->reader_token);
+        $this->assertSame($first->reader_token, $first->fresh()->reader_token);
+        $this->assertNotSame($first->reader_token, $first->getRawOriginal('reader_token'));
+        $this->assertSame(hash('sha256', $first->reader_token), $first->reader_token_hash);
+
+        $this->expectException(UniqueConstraintViolationException::class);
+        $second->reader_token_hash = $first->reader_token_hash;
+        $second->save();
+    }
 
     public function test_the_snapshot_is_stored_separately_and_encrypted(): void
     {
