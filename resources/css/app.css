@@ -283,6 +283,19 @@ button.site-header__link {
     padding-block: 0.3rem;
 }
 
+.publication-confirmation {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.attestation {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding-block: 0.5rem;
+}
+
 .draft-list {
     display: grid;
     gap: 0.8rem;

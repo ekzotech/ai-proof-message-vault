@@ -16,6 +16,23 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_publication_requires_a_verified_author_and_an_attestation(): void
+    {
+        $author = User::factory()->unverified()->create();
+        $draft = Capsule::factory()->for($author, 'author')->create(['opens_at' => now()->addHour()]);
+        $data = ['version' => 0, 'preset' => 'gentle'];
+
+        $this->withoutVite()->actingAs($author)->get(route('capsules.preview', $draft))
+            ->assertSee('подтвердите почту')->assertDontSee('Запечатать и опубликовать');
+        $this->post(route('capsules.publish', $draft), $data)->assertRedirect(route('verification.notice'));
+
+        $author->markEmailAsVerified();
+        $this->get(route('capsules.preview', ['capsule' => $draft, 'preset' => 'experimental']))
+            ->assertSee('Экспериментальный')->assertSee('Запечатать и опубликовать');
+        $this->post(route('capsules.publish', $draft), $data)->assertSessionHasErrors('author_attested');
+        $this->assertDatabaseCount('capsule_publications', 0);
+    }
+
     public function test_publishing_is_atomic_and_idempotent_and_locks_the_draft(): void
     {
         $draft = Capsule::factory()->create(['opens_at' => now()->addHour()]);

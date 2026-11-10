@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/capsules/{capsule}/edit', fn (Capsule $capsule) => view('capsules.edit', compact('capsule')))
         ->can('update', 'capsule')->name('capsules.edit');
     Route::get('/capsules/{capsule}/preview', CapsulePreviewController::class)
-        ->can('view', 'capsule')->name('capsules.preview');
+        ->can('update', 'capsule')->name('capsules.preview');
     Route::post('/capsules/{capsule}/publish', [CapsulePublicationController::class, 'store'])
         ->middleware('verified')->can('publish', 'capsule')->name('capsules.publish');
     Route::view('/profile', 'profile')->name('profile.edit');

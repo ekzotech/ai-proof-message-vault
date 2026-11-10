@@ -32,6 +32,30 @@
             </dl>
         </details>
 
+        <section class="publication-confirmation" aria-labelledby="publication-title">
+            <h2 id="publication-title">Публикация</h2>
+            <x-form-errors />
+            @if (! auth()->user()->hasVerifiedEmail())
+                <p>Для публикации <a class="underline" href="{{ route('verification.notice') }}">подтвердите почту</a>.</p>
+            @elseif (! $capsule->opens_at?->isFuture())
+                <p>Выберите будущую дату открытия в редакторе.</p>
+            @else
+                <p>Открытие {{ $capsule->opens_at->setTimezone(auth()->user()->timezone)->format('d.m.Y H:i') }} ({{ auth()->user()->timezone }}).</p>
+                <p>Режим обработки — {{ $preset->label() }}.</p>
+                <form class="auth-form" method="post" action="{{ route('capsules.publish', $capsule) }}">
+                    @csrf
+                    <input type="hidden" name="version" value="{{ $capsule->lock_version }}">
+                    <input type="hidden" name="preset" value="{{ $preset->value }}">
+                    <label class="attestation">
+                        <input type="checkbox" name="author_attested" value="1" required @checked(old('author_attested'))>
+                        <span>Я заявляю, что этот текст написан человеком.</span>
+                    </label>
+                    <p class="auth-hint">Это заявление автора. После публикации текст и дата открытия фиксируются.</p>
+                    <button class="action" type="submit">Запечатать и опубликовать</button>
+                </form>
+            @endif
+        </section>
+
         <p><a class="underline" href="{{ route('capsules.edit', $capsule) }}">Вернуться к редактору</a></p>
     </section>
 </x-layouts.vault>
