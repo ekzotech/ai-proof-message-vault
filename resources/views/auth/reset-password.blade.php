@@ -1,6 +1,8 @@
 <x-layouts.vault title="Новый пароль — Message Vault">
     <section class="auth-panel" aria-labelledby="reset-password-title">
         <h1 id="reset-password-title">Новый пароль</h1>
+        <x-form-errors />
+
         <form class="auth-form" method="post" action="{{ route('password.update') }}">
             @csrf
             <input type="hidden" name="token" value="{{ request()->route('token') }}">

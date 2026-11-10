@@ -6,6 +6,8 @@
             <p role="status">{{ session('status') }}</p>
         @endif
 
+        <x-form-errors />
+
         <form class="auth-form" method="post" action="{{ route('profile.update') }}">
             @csrf
             @method('PATCH')

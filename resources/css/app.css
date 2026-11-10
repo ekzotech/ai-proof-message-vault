@@ -58,6 +58,18 @@
     background: var(--surface);
 }
 
+.skip-link {
+    position: absolute;
+    z-index: 1;
+    inset: 0.75rem auto auto 0.75rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--surface);
+}
+
+.skip-link:not(:focus) {
+    clip-path: inset(50%);
+}
+
 .site-header__inner {
     display: flex;
     align-items: center;
@@ -212,6 +224,20 @@ button.site-header__link {
 
 .auth-error {
     color: #9f2f2d;
+}
+
+.form-errors {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid #9f2f2d;
+    border-radius: 5px;
+    background: #fdebec;
+    color: #75211e;
+}
+
+.form-errors ul {
+    padding-inline-start: 1rem;
+    list-style: disc;
 }
 
 .landing-lead {

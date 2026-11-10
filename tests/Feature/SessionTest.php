@@ -46,6 +46,19 @@ class SessionTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_a_validation_failure_keeps_the_form_accessible_even_with_invalid_input_types(): void
+    {
+        $this->withoutVite()->from(route('login'))->post(route('login'), [
+            'email' => ['unexpected'],
+            'password' => 'letters-for-tomorrow',
+        ])->assertRedirect(route('login'));
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('tabindex="-1" autofocus', escape: false)
+            ->assertSee('aria-describedby="email-error"', escape: false);
+    }
+
     public function test_five_failed_attempts_temporarily_block_sign_in(): void
     {
         User::factory()->create(['email' => 'author@example.test', 'password' => 'letters-for-tomorrow']);

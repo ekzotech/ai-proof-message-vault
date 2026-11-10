@@ -6,12 +6,15 @@
             <p role="status">{{ session('status') }}</p>
         @endif
 
+        <x-form-errors />
+
         <form class="auth-form" method="post" action="{{ route('login') }}">
             @csrf
 
             <div class="auth-field">
                 <label for="email">Электронная почта</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" maxlength="254" required
+                @php($address = old('email'))
+                <input id="email" name="email" type="email" value="{{ is_string($address) ? $address : '' }}" autocomplete="username" maxlength="254" required
                     @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
                 @error('email')
                     <p class="auth-error" id="email-error">{{ $message }}</p>

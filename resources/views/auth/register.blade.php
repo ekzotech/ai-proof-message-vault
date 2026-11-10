@@ -2,12 +2,15 @@
     <section class="auth-panel" aria-labelledby="register-title">
         <h1 id="register-title">Создать аккаунт</h1>
 
+        <x-form-errors />
+
         <form class="auth-form" method="post" action="{{ route('register') }}">
             @csrf
 
             <div class="auth-field">
                 <label for="name">Имя</label>
-                <input id="name" name="name" value="{{ old('name') }}" autocomplete="name" maxlength="100" required
+                @php($name = old('name'))
+                <input id="name" name="name" value="{{ is_string($name) ? $name : '' }}" autocomplete="name" maxlength="100" required
                     @error('name') aria-invalid="true" aria-describedby="name-error" @enderror>
                 @error('name')
                     <p class="auth-error" id="name-error">{{ $message }}</p>
@@ -16,7 +19,8 @@
 
             <div class="auth-field">
                 <label for="email">Электронная почта</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" maxlength="254" required
+                @php($address = old('email'))
+                <input id="email" name="email" type="email" value="{{ is_string($address) ? $address : '' }}" autocomplete="email" maxlength="254" required
                     @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
                 @error('email')
                     <p class="auth-error" id="email-error">{{ $message }}</p>

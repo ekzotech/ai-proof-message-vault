@@ -8,6 +8,7 @@
         @livewireStyles
     </head>
     <body>
+        <a class="skip-link" href="#content">Перейти к содержимому</a>
         <header class="site-header">
             <div class="page-width site-header__inner">
                 <a class="wordmark" href="{{ route('home') }}" lang="en">Message Vault</a>
@@ -26,7 +27,7 @@
             </div>
         </header>
 
-        <main class="page-width" id="content">{{ $slot }}</main>
+        <main class="page-width" id="content" tabindex="-1">{{ $slot }}</main>
 
         @livewireScripts
     </body>
