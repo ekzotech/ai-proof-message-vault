@@ -8,7 +8,7 @@
                     <label for="reader-link">Ссылка для читателя</label>
                     <input id="reader-link" type="url" value="{{ $readerUrl }}" readonly x-ref="link">
                 </div>
-                <button class="action" type="button" x-on:click="
+                <button class="action" type="button" x-on:click="(async () => {
                     try {
                         await navigator.clipboard.writeText($refs.link.value);
                         message = 'Ссылка скопирована.';
@@ -16,7 +16,7 @@
                         $refs.link.select();
                         message = 'Скопируйте выделенную ссылку вручную.';
                     }
-                ">Копировать ссылку</button>
+                })()">Копировать ссылку</button>
                 <p role="status" x-text="message"></p>
             </div>
             <form method="post" action="{{ route('capsules.revoke', $capsule) }}">
