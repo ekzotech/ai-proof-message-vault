@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Capsule;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -24,6 +25,8 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/capsules/{capsule}/edit', fn (Capsule $capsule) => view('capsules.edit', compact('capsule')))
+        ->can('update', 'capsule')->name('capsules.edit');
     Route::view('/profile', 'profile')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
