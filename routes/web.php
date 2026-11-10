@@ -6,12 +6,14 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\CapsulePreviewController;
 use App\Http\Controllers\CapsulePublicationController;
+use App\Http\Controllers\CapsuleReaderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Capsule;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
+Route::get('/c/{token}', CapsuleReaderController::class)->where('token', '[a-f0-9]{48}')->name('capsules.read');
 
 Route::middleware('guest')->group(function (): void {
     Route::view('/register', 'auth.register')->name('register');

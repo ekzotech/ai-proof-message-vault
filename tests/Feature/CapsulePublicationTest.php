@@ -16,6 +16,22 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_the_waiting_page_only_exposes_the_opening_time(): void
+    {
+        $draft = Capsule::factory()->create(['body' => 'Закрытый оригинал']);
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+
+        $response = $this->withoutVite()->get(route('capsules.read', $snapshot->reader_token))
+            ->assertOk()->assertSee('Капсула ожидает открытия')
+            ->assertSee($snapshot->opens_at->toIso8601String())
+            ->assertDontSee($snapshot->title)->assertDontSee('Снимок')
+            ->assertDontSee($draft->body)->assertDontSee('wire:snapshot');
+
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+    }
+
     public function test_publication_requires_a_verified_author_and_an_attestation(): void
     {
         $author = User::factory()->unverified()->create();
