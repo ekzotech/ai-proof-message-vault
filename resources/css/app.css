@@ -182,6 +182,7 @@ button.site-header__link {
 .auth-panel {
     width: min(100%, 28rem);
     padding-block: var(--section-space);
+    overflow-wrap: anywhere;
 }
 
 .auth-panel h1 {
@@ -259,6 +260,7 @@ button.site-header__link {
 }
 
 .capsule-preview__sheet {
+    min-width: 0;
     padding: clamp(1rem, 4vw, 2rem);
     border: 1px solid var(--line);
     border-radius: 8px;
