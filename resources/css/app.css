@@ -265,6 +265,13 @@ button.site-header__link {
     background: var(--surface);
 }
 
+.waiting-date time {
+    display: block;
+    margin-top: 0.45rem;
+    font-family: var(--font-label);
+    font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
 .preview-presets {
     display: flex;
     flex-wrap: wrap;

@@ -130,8 +130,9 @@ class CapsulePublicationTest extends TestCase
         $this->withoutVite()->get($link)->assertOk();
         $this->actingAs(User::factory()->create())->patch($revoke)->assertForbidden();
         $this->actingAs($draft->author)->patch($revoke)->assertRedirect(route('capsules.publication', $draft));
-        $this->get($link)->assertNotFound();
-        $this->get(route('capsules.read', str_repeat('0', 48)))->assertNotFound();
+        $revoked = $this->get($link)->assertNotFound()->assertSee('Капсула недоступна');
+        $unknown = $this->get(route('capsules.read', str_repeat('0', 48)))->assertNotFound();
+        $this->assertSame($revoked->getContent(), $unknown->getContent());
         $this->get(route('capsules.publication', $draft))->assertSee('Ссылка отозвана')->assertDontSee($snapshot->reader_token);
     }
 
