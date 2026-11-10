@@ -2,6 +2,10 @@
     <section class="auth-panel" aria-labelledby="login-title">
         <h1 id="login-title">Войти в аккаунт</h1>
 
+        @if (session('status'))
+            <p role="status">{{ session('status') }}</p>
+        @endif
+
         <form class="auth-form" method="post" action="{{ route('login') }}">
             @csrf
 

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
-use Closure;
+use App\Rules\NewPassword;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -22,14 +23,10 @@ class RegisterController
         $attributes = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:254', 'unique:users,email'],
-            'password' => ['bail', 'required', 'string', 'confirmed', 'min:12',
-                function (string $attribute, string $value, Closure $fail): void {
-                    if (strlen($value) > 72 || str_contains($value, "\0")) {
-                        $fail('Пароль должен содержать до 72 байт без нулевого символа.');
-                    }
-                },
-            ],
+            'password' => ['bail', 'required', 'string', 'confirmed', 'min:12', new NewPassword],
         ]);
+
+        $attributes['password'] = Hash::make($attributes['password']);
 
         try {
             $user = User::create($attributes);

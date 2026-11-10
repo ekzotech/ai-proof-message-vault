@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class PasswordRecoveryTest extends TestCase
@@ -33,5 +35,36 @@ class PasswordRecoveryTest extends TestCase
             $link,
         );
         $this->withoutVite()->get($link)->assertOk();
+    }
+
+    public function test_a_reset_token_changes_the_password_only_once(): void
+    {
+        $author = User::factory()->create();
+        $data = [
+            'email' => $author->email,
+            'token' => Password::createToken($author),
+            'password' => 'new-password-for-tomorrow',
+            'password_confirmation' => 'new-password-for-tomorrow',
+        ];
+
+        $this->post(route('password.update'), $data)->assertRedirect(route('login'));
+        $this->assertTrue(Hash::check($data['password'], $author->fresh()->password));
+        $this->post(route('password.update'), $data)->assertSessionHasErrors('email');
+    }
+
+    public function test_an_expired_token_cannot_change_the_password(): void
+    {
+        $author = User::factory()->create();
+        $token = Password::createToken($author);
+        $this->travel(config('auth.passwords.users.expire') + 1)->minutes();
+
+        $this->post(route('password.update'), [
+            'email' => $author->email,
+            'token' => $token,
+            'password' => 'new-password-for-tomorrow',
+            'password_confirmation' => 'new-password-for-tomorrow',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertSame($author->password, $author->fresh()->password);
     }
 }

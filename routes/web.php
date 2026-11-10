@@ -16,6 +16,8 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/forgot-password', [PasswordRecoveryController::class, 'send'])
         ->middleware('throttle:5,1')->name('password.email');
     Route::view('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
+    Route::post('/reset-password', [PasswordRecoveryController::class, 'reset'])
+        ->middleware('throttle:10,1')->name('password.update');
 });
 
 Route::post('/logout', [SessionController::class, 'destroy'])->middleware('auth')->name('logout');
