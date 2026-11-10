@@ -2,6 +2,7 @@
     <section class="auth-panel" aria-labelledby="dashboard-title">
         <p class="eyebrow">Личный кабинет</p>
         <h1 id="dashboard-title">Капсулы</h1>
+        <p><a class="underline" href="{{ route('profile.edit') }}">Настройки профиля</a></p>
 
         @if (! auth()->user()->hasVerifiedEmail())
             <p>Подтвердите почту, чтобы публиковать капсулы.</p>

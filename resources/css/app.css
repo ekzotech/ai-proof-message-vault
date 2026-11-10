@@ -190,9 +190,10 @@ button.site-header__link {
     font-weight: 600;
 }
 
-.auth-field input {
+.auth-field input, .auth-field select {
     min-height: 44px;
     min-width: 0;
+    max-width: 100%;
     padding-inline: 0.7rem;
     border: 1px solid #b8b4a9;
     border-radius: 5px;
