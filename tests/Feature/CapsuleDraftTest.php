@@ -53,4 +53,21 @@ class CapsuleDraftTest extends TestCase
         $editor->set('body', $body)->call('save')->assertHasNoErrors();
         $this->assertSame($body, $author->capsules()->sole()->body);
     }
+
+    public function test_only_the_owner_can_update_a_draft_through_the_component(): void
+    {
+        $draft = Capsule::factory()->create(['body' => 'Исходный текст']);
+        $other = User::factory()->create();
+        Livewire::actingAs($other)->test(CapsuleDraftEditor::class, ['capsule' => $draft])->assertForbidden();
+
+        $editor = Livewire::actingAs($draft->author)->test(CapsuleDraftEditor::class, ['capsule' => $draft])
+            ->assertSet('body', 'Исходный текст')
+            ->set('title', 'Новый заголовок')
+            ->set('body', ' ')
+            ->call('save')->assertHasErrors('body')
+            ->assertSet('title', 'Новый заголовок');
+
+        $editor->set('body', 'Новый текст')->call('save')->assertHasNoErrors()->assertRedirect(route('capsules.edit', $draft));
+        $this->assertSame('Новый текст', $draft->fresh()->body);
+    }
 }
