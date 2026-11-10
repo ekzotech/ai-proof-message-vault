@@ -16,9 +16,11 @@ class Capsule extends Model
     /** @use HasFactory<CapsuleFactory> */
     use HasFactory;
 
+    protected $attributes = ['lock_version' => 0];
+
     protected function casts(): array
     {
-        return ['body' => 'encrypted'];
+        return ['body' => 'encrypted', 'lock_version' => 'integer'];
     }
 
     public function author(): BelongsTo

@@ -70,4 +70,19 @@ class CapsuleDraftTest extends TestCase
         $editor->set('body', 'Новый текст')->call('save')->assertHasNoErrors()->assertRedirect(route('capsules.edit', $draft));
         $this->assertSame('Новый текст', $draft->fresh()->body);
     }
+
+    public function test_a_stale_editor_does_not_overwrite_a_newer_version(): void
+    {
+        $draft = Capsule::factory()->create();
+        Livewire::actingAs($draft->author);
+        $first = Livewire::test(CapsuleDraftEditor::class, ['capsule' => $draft]);
+        $second = Livewire::test(CapsuleDraftEditor::class, ['capsule' => $draft]);
+
+        $first->set('body', 'Первая сохранённая версия')->call('save')->assertHasNoErrors();
+        $second->set('body', 'Текст из старой вкладки')->call('save')->assertHasErrors('conflict')
+            ->assertSet('body', 'Текст из старой вкладки');
+
+        $this->assertSame('Первая сохранённая версия', $draft->fresh()->body);
+        $this->assertSame(1, $draft->fresh()->lock_version);
+    }
 }

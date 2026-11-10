@@ -14,6 +14,9 @@ class CapsuleDraftEditor extends Component
     #[Locked]
     public ?int $capsuleId = null;
 
+    #[Locked]
+    public int $version = 0;
+
     public string $title = '';
 
     public string $body = '';
@@ -23,6 +26,7 @@ class CapsuleDraftEditor extends Component
         if ($capsule?->exists) {
             Gate::authorize('update', $capsule);
             $this->capsuleId = $capsule->id;
+            $this->version = $capsule->lock_version;
             $this->title = $capsule->title;
             $this->body = $capsule->body;
         }
@@ -37,7 +41,18 @@ class CapsuleDraftEditor extends Component
             'body' => ['bail', 'required', 'string', 'max:'.CapsuleText::MAX_BODY, new CapsuleText],
         ]);
         if ($capsule) {
-            $capsule->update($data);
+            $capsule->fill($data);
+            $updated = auth()->user()->capsules()
+                ->whereKey($capsule->id)
+                ->where('lock_version', $this->version)
+                ->update([...$capsule->getDirty(), 'lock_version' => $this->version + 1]);
+
+            if ($updated !== 1) {
+                $this->addError('conflict', 'Черновик уже изменён в другой вкладке. Скопируйте свой текст и откройте свежую версию.');
+
+                return;
+            }
+
             session()->flash('status', 'Черновик сохранён.');
         } else {
             $capsule = auth()->user()->capsules()->create($data);

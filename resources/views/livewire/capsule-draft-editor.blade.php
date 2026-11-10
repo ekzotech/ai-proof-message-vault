@@ -1,4 +1,8 @@
 <form class="auth-form" wire:submit="save">
+    @error('conflict')
+        <p class="auth-error" role="alert">{{ $message }}</p>
+    @enderror
+
     <div class="auth-field">
         <label for="capsule-title">Заголовок</label>
         <input id="capsule-title" wire:model="title" value="{{ $title }}" required
