@@ -10,10 +10,12 @@ use App\Http\Controllers\CapsulePublicationController;
 use App\Http\Controllers\CapsuleReaderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReadinessController;
 use App\Models\Capsule;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
+Route::get('/ready', ReadinessController::class)->withoutMiddleware('web')->name('ready');
 Route::get('/c/{token}', CapsuleReaderController::class)->where('token', '[a-f0-9]{48}')
     ->middleware('throttle:capsule-reader')->name('capsules.read');
 
