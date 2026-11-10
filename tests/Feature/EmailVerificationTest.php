@@ -22,7 +22,7 @@ class EmailVerificationTest extends TestCase
         $this->actingAs($author)->get($url.'x')->assertForbidden();
         $this->assertFalse($author->fresh()->hasVerifiedEmail());
 
-        $this->get($url)->assertRedirect(route('verification.notice'));
+        $this->get($url)->assertRedirect(route('dashboard'));
         $this->assertTrue($author->fresh()->hasVerifiedEmail());
     }
 

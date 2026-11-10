@@ -19,7 +19,7 @@ class SessionTest extends TestCase
         $this->post(route('login'), [
             'email' => 'AUTHOR@example.test',
             'password' => 'letters-for-tomorrow',
-        ])->assertRedirect(route('home'));
+        ])->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticatedAs($user);
         $this->assertNotSame($anonymousSession, session()->getId());
@@ -63,7 +63,7 @@ class SessionTest extends TestCase
         $this->assertGuest();
 
         $this->travel(61)->seconds();
-        $this->post(route('login'), $credentials)->assertRedirect(route('home'));
+        $this->post(route('login'), $credentials)->assertRedirect(route('dashboard'));
         $this->assertAuthenticated();
     }
 }

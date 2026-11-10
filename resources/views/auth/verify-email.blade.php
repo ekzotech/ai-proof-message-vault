@@ -2,7 +2,7 @@
     <section class="auth-panel" aria-labelledby="verification-title">
         @if (auth()->user()->hasVerifiedEmail())
             <h1 id="verification-title">Почта подтверждена</h1>
-            <p><a class="underline" href="{{ route('home') }}">На главную</a></p>
+            <p><a class="underline" href="{{ route('dashboard') }}">В кабинет</a></p>
         @else
             <h1 id="verification-title">Подтвердите почту</h1>
             <p>Откройте ссылку из письма, отправленного на {{ auth()->user()->email }}.</p>

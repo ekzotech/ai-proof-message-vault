@@ -22,6 +22,7 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware('auth')->group(function (): void {
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::post('/logout', [SessionController::class, 'destroy'])->name('logout');
     Route::view('/verify-email', 'auth.verify-email')->name('verification.notice');
     Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])

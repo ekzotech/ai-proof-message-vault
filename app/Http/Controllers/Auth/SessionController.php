@@ -37,7 +37,7 @@ class SessionController
 
         RateLimiter::clear($attemptKey);
 
-        return redirect()->intended(route('home'));
+        return redirect()->intended(route('dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse

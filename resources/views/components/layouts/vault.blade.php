@@ -16,6 +16,7 @@
                         <a class="site-header__link" href="{{ route('register') }}">Регистрация</a>
                         <a class="site-header__link" href="{{ route('login') }}">Войти</a>
                     @else
+                        <a class="site-header__link" href="{{ route('dashboard') }}">Кабинет</a>
                         <form method="post" action="{{ route('logout') }}">
                             @csrf
                             <button class="site-header__link" type="submit">Выйти</button>

@@ -12,7 +12,7 @@ class EmailVerificationController
     {
         $request->fulfill();
 
-        return redirect()->route('verification.notice');
+        return redirect()->route('dashboard');
     }
 
     public function resend(Request $request): RedirectResponse
