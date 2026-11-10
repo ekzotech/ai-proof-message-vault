@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Capsules\CapsuleState;
+use App\Capsules\TransformationPipeline;
 use App\Capsules\TransformationPreset;
 use App\Models\Capsule;
 use App\Models\CapsulePublication;
@@ -15,6 +16,20 @@ use Tests\TestCase;
 class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_after_opening_the_reader_sees_the_saved_snapshot_without_rerunning_the_pipeline(): void
+    {
+        $draft = Capsule::factory()->create(['title' => 'Живой заголовок', 'body' => 'Живой текст']);
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $this->mock(TransformationPipeline::class, fn ($mock) => $mock->shouldNotReceive('transform'));
+
+        $this->travelTo($snapshot->opens_at);
+        $this->withoutVite()->get(route('capsules.read', $snapshot->reader_token))
+            ->assertOk()->assertSee('Сохранённый заголовок')->assertSee('Снимок')
+            ->assertDontSee($draft->title)->assertDontSee($draft->body);
+    }
 
     public function test_the_waiting_page_only_exposes_the_opening_time(): void
     {

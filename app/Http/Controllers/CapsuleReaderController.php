@@ -14,7 +14,10 @@ class CapsuleReaderController
         $state = CapsuleState::at($publication, now());
         abort_if(in_array($state, [CapsuleState::Draft, CapsuleState::Revoked], true), 404);
 
-        return response()->view('capsules.waiting', ['opensAt' => $publication->opens_at])
-            ->header('Cache-Control', 'private, no-store');
+        $response = $state === CapsuleState::Open
+            ? response()->view('capsules.read', ['publication' => $publication])
+            : response()->view('capsules.waiting', ['opensAt' => $publication->opens_at]);
+
+        return $response->header('Cache-Control', 'private, no-store');
     }
 }
