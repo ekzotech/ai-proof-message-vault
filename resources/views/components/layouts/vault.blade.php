@@ -11,9 +11,17 @@
         <header class="site-header">
             <div class="page-width site-header__inner">
                 <a class="wordmark" href="{{ route('home') }}" lang="en">Message Vault</a>
-                @guest
-                    <a class="site-header__link" href="{{ route('register') }}">Регистрация</a>
-                @endguest
+                <nav class="site-header__nav" aria-label="Аккаунт">
+                    @guest
+                        <a class="site-header__link" href="{{ route('register') }}">Регистрация</a>
+                        <a class="site-header__link" href="{{ route('login') }}">Войти</a>
+                    @else
+                        <form method="post" action="{{ route('logout') }}">
+                            @csrf
+                            <button class="site-header__link" type="submit">Выйти</button>
+                        </form>
+                    @endguest
+                </nav>
             </div>
         </header>
 
