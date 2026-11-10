@@ -2,3 +2,143 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+
+:root {
+    --canvas: #f7f6f3;
+    --surface: #fff;
+    --ink: #22211e;
+    --muted: #605d55;
+    --line: #eaeaea;
+    --accent: #37573b;
+    --accent-soft: #edf3ec;
+    --font-body: system-ui, 'Segoe UI', sans-serif;
+    --font-display: Georgia, 'Times New Roman', serif;
+    --font-label: ui-monospace, Consolas, monospace;
+    --page-gutter: clamp(1rem, 4vw, 3rem);
+    --section-space: clamp(2.75rem, 8vw, 6.5rem);
+}
+
+@layer base {
+    body {
+        min-height: 100vh;
+        background: var(--canvas);
+        color: var(--ink);
+        font: 1rem / 1.6 var(--font-body);
+    }
+
+    h1, h2 {
+        font-family: var(--font-display);
+        font-weight: 400;
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+    }
+
+    h1 {
+        font-size: clamp(2.5rem, 7vw, 5.75rem);
+    }
+
+    h2 {
+        font-size: clamp(1.65rem, 4vw, 2.3rem);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+    }
+}
+
+.page-width {
+    max-width: 68rem;
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+}
+
+.site-header {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    min-height: 4rem;
+}
+
+.wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 44px;
+    font-weight: 650;
+}
+
+.wordmark::before {
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--accent);
+    rotate: 45deg;
+    content: '';
+}
+
+.eyebrow, .status-label {
+    font: 0.73rem / 1.5 var(--font-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.eyebrow {
+    color: var(--muted);
+}
+
+.capsule-example {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 1rem;
+    min-width: 0;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.capsule-example__status {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--muted);
+}
+
+.capsule-example__status blockquote {
+    color: var(--ink);
+    font: 1.2rem / 1.5 var(--font-display);
+}
+
+.status-label {
+    justify-self: start;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.action {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.9rem;
+    border-radius: 5px;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.action:hover {
+    background: #333;
+}
+
+.action:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
