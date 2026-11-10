@@ -2,6 +2,9 @@
 
 namespace Tests;
 
+use App\Capsules\TransformationPreset;
+use App\Models\Capsule;
+use App\Models\CapsulePublication;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -46,5 +49,24 @@ abstract class DuskTestCase extends BaseTestCase
             'http://127.0.0.1:'.getenv('VAULT_DUSK_DRIVER_PORT'),
             DesiredCapabilities::chrome()->setCapability(ChromeOptions::CAPABILITY, $options),
         );
+    }
+
+    protected function publishFixture(string $original, array $segments, string $title = 'Браузерная капсула'): CapsulePublication
+    {
+        $draft = Capsule::factory()->create(['title' => $title, 'body' => $original]);
+        $publication = $draft->publication()->make([
+            'title' => $title,
+            'opens_at' => now()->subMinute(),
+            'algorithm_version' => 1,
+            'seed' => $draft->transformation_seed,
+            'preset' => TransformationPreset::Experimental,
+            'segments' => $segments,
+            'accessible_text' => $original,
+            'author_attested' => true,
+        ]);
+        $publication->issueReaderToken();
+        $publication->save();
+
+        return $publication;
     }
 }
