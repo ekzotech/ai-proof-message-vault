@@ -39,7 +39,8 @@
             "@php artisan migrate --no-interaction"
         ],
         "lint": "@php vendor/bin/pint --test",
-        "dusk": "@php scripts/run-dusk.php",
+        "dusk": "@php scripts/run-isolated.php dusk",
+        "smoke": "@php scripts/run-isolated.php smoke",
         "audit:locked": [
             "@composer audit --locked --no-interaction",
             "npm audit --audit-level=low"

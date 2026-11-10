@@ -53,6 +53,9 @@ jobs:
           php artisan key:generate --no-interaction
           composer test
 
+      - name: Run clean-install HTTP smoke
+        run: composer smoke
+
       - name: Install matching ChromeDriver
         run: |
           google-chrome --version

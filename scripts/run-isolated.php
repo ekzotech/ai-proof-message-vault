@@ -7,8 +7,14 @@ use Symfony\Component\Process\Process;
 $root = dirname(__DIR__);
 require $root.'/vendor/autoload.php';
 
+$mode = $argv[1] ?? '';
+if (! in_array($mode, ['dusk', 'smoke'], true)) {
+    fwrite(STDERR, "Run composer dusk or composer smoke.\n");
+    exit(1);
+}
+
 if (is_file($root.'/public/hot') || ! is_file($root.'/public/build/manifest.json')) {
-    fwrite(STDERR, "Stop Vite's dev server and build assets with npm run build before starting Dusk.\n");
+    fwrite(STDERR, "Stop Vite's dev server and build assets with npm run build before starting tests.\n");
     exit(1);
 }
 
@@ -27,7 +33,7 @@ $driverPort = parse_url('tcp://'.stream_socket_get_name($driverSocket, false), P
 fclose($appSocket);
 fclose($driverSocket);
 
-$database = sys_get_temp_dir().DIRECTORY_SEPARATOR.'vault-dusk-'.bin2hex(random_bytes(8)).'.sqlite';
+$database = sys_get_temp_dir().DIRECTORY_SEPARATOR.'vault-'.$mode.'-'.bin2hex(random_bytes(8)).'.sqlite';
 $file = fopen($database, 'x');
 if ($file === false) {
     throw new RuntimeException('Could not create an isolated test database.');
@@ -41,7 +47,8 @@ $environment = [
     'APP_PREVIOUS_KEYS' => '(null)',
     'APP_URL' => 'http://'.$address,
     'APP_LOCALE' => 'ru',
-    'APP_CONFIG_CACHE' => $database.'.config',
+    'APP_CONFIG_CACHE' => 'bootstrap/cache/'.basename($database).'.config.php',
+    'APP_ROUTES_CACHE' => 'bootstrap/cache/'.basename($database).'.routes.php',
     'DB_CONNECTION' => 'sqlite',
     'DB_DATABASE' => $database,
     'DB_URL' => '(null)',
@@ -52,7 +59,7 @@ $environment = [
     'MAIL_MAILER' => 'array',
     'QUEUE_CONNECTION' => 'sync',
     'BCRYPT_ROUNDS' => '4',
-    'VAULT_DUSK_ISOLATED' => 'true',
+    'VAULT_DUSK_ISOLATED' => $mode === 'dusk' ? 'true' : 'false',
     'VAULT_DUSK_DRIVER_PORT' => (string) $driverPort,
 ];
 
@@ -73,13 +80,16 @@ try {
             break;
         }
         if (! $server->isRunning() || $attempt === 49) {
-            throw new RuntimeException('The isolated Dusk server failed to start.');
+            throw new RuntimeException('The isolated test server failed to start.');
         }
         usleep(100_000);
     }
 
-    $dusk = new Process([PHP_BINARY, 'artisan', 'dusk', '--without-tty', ...array_slice($argv, 1)], $root, $environment, timeout: 240);
-    $status = $dusk->run(fn (string $type, string $output) => fwrite($type === Process::ERR ? STDERR : STDOUT, $output));
+    $command = $mode === 'dusk'
+        ? [PHP_BINARY, 'artisan', 'dusk', '--without-tty', ...array_slice($argv, 2)]
+        : [PHP_BINARY, 'scripts/check-http-smoke.php'];
+    $test = new Process($command, $root, $environment, timeout: 240);
+    $status = $test->run(fn (string $type, string $output) => fwrite($type === Process::ERR ? STDERR : STDOUT, $output));
 } finally {
     $server->stop(1);
     foreach ([$database, $database.'-wal', $database.'-shm', $database.'-journal'] as $path) {
