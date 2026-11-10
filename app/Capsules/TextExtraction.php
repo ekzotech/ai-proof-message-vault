@@ -7,6 +7,11 @@ use Normalizer;
 
 class TextExtraction
 {
+    public static function foldLookalikes(string $text): string
+    {
+        return strtr($text, array_flip(Homoglyphs::PAIRS));
+    }
+
     public static function cleanSpacing(string $text): string
     {
         $text = preg_replace('/[\x{00AD}\x{200B}\x{2060}\x{FEFF}]/u', '', $text);
