@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Capsule;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +25,7 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware('auth')->group(function (): void {
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::view('/capsules/create', 'capsules.create')->can('create', Capsule::class)->name('capsules.create');
     Route::get('/capsules/{capsule}/edit', fn (Capsule $capsule) => view('capsules.edit', compact('capsule')))
         ->can('update', 'capsule')->name('capsules.edit');

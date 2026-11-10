@@ -222,6 +222,25 @@ button.site-header__link {
     width: min(100%, 42rem);
 }
 
+.draft-list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 2rem;
+}
+
+.draft-list li {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--line);
+    overflow-wrap: anywhere;
+}
+
+.draft-list time {
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
 .auth-hint, .auth-error {
     font-size: 0.875rem;
     font-weight: 400;
