@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['title', 'body'])]
+#[Fillable(['title', 'body', 'opens_at'])]
 #[Hidden(['body'])]
 class Capsule extends Model
 {
@@ -20,7 +20,7 @@ class Capsule extends Model
 
     protected function casts(): array
     {
-        return ['body' => 'encrypted', 'lock_version' => 'integer'];
+        return ['body' => 'encrypted', 'lock_version' => 'integer', 'opens_at' => 'immutable_datetime'];
     }
 
     public function author(): BelongsTo

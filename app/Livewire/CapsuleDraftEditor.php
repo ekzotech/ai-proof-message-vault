@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Capsule;
 use App\Rules\CapsuleText;
+use App\Support\LocalOpeningTime;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
@@ -21,14 +22,28 @@ class CapsuleDraftEditor extends Component
 
     public string $body = '';
 
+    #[Locked]
+    public string $timezone = 'UTC';
+
+    public string $opening = '';
+
+    public string $openingOffset = '';
+
     public function mount(?Capsule $capsule = null): void
     {
+        $this->timezone = auth()->user()?->timezone ?? 'UTC';
+
         if ($capsule?->exists) {
             Gate::authorize('update', $capsule);
             $this->capsuleId = $capsule->id;
             $this->version = $capsule->lock_version;
             $this->title = $capsule->title;
             $this->body = $capsule->body;
+            if ($capsule->opens_at) {
+                $local = $capsule->opens_at->setTimezone($this->timezone);
+                $this->opening = $local->format('Y-m-d\TH:i');
+                $this->openingOffset = $local->format('P');
+            }
         }
     }
 
@@ -39,7 +54,28 @@ class CapsuleDraftEditor extends Component
         $data = $this->validate([
             'title' => ['bail', 'required', 'string', 'max:'.CapsuleText::MAX_TITLE, new CapsuleText],
             'body' => ['bail', 'required', 'string', 'max:'.CapsuleText::MAX_BODY, new CapsuleText],
+            'opening' => ['nullable', 'string', 'max:16'],
+            'openingOffset' => ['nullable', 'string', 'max:6'],
         ]);
+        $data['opens_at'] = null;
+
+        if ($this->opening !== '') {
+            $choices = LocalOpeningTime::candidates($this->opening, $this->timezone);
+
+            if ($choices === []) {
+                $this->addError('opening', 'Такого времени в выбранном часовом поясе нет. Проверьте дату и время.');
+
+                return;
+            }
+
+            if (count($choices) > 1 && ! isset($choices[$this->openingOffset])) {
+                $this->addError('openingOffset', 'Выберите смещение UTC для этого времени.');
+
+                return;
+            }
+
+            $data['opens_at'] = $choices[$this->openingOffset] ?? reset($choices);
+        }
         if ($capsule) {
             $capsule->fill($data);
             $updated = auth()->user()->capsules()
@@ -65,7 +101,14 @@ class CapsuleDraftEditor extends Component
     {
         $this->authorizedCapsule();
 
-        return view('livewire.capsule-draft-editor');
+        return view('livewire.capsule-draft-editor', [
+            'offsets' => array_keys(LocalOpeningTime::candidates($this->opening, $this->timezone)),
+        ]);
+    }
+
+    public function updatedOpening(): void
+    {
+        $this->openingOffset = '';
     }
 
     private function authorizedCapsule(): ?Capsule

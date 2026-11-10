@@ -88,4 +88,23 @@ class CapsuleDraftTest extends TestCase
         $this->assertSame('Первая сохранённая версия', $draft->fresh()->body);
         $this->assertSame(1, $draft->fresh()->lock_version);
     }
+
+    public function test_opening_uses_the_authors_timezone_and_requires_an_offset_for_ambiguous_time(): void
+    {
+        $author = User::factory()->create(['timezone' => 'America/New_York']);
+        $editor = Livewire::actingAs($author)->test(CapsuleDraftEditor::class)
+            ->set('title', 'Послание')->set('body', 'Текст послания')
+            ->set('opening', '2026-03-08T02:30')
+            ->call('save')->assertHasErrors('opening')
+            ->set('opening', '2026-11-01T01:30')
+            ->call('save')->assertHasErrors('openingOffset');
+
+        $editor->set('openingOffset', '-05:00')->call('save')->assertHasNoErrors();
+
+        $draft = $author->capsules()->sole();
+        $this->assertSame('2026-11-01 06:30:00', $draft->opens_at->toDateTimeString());
+        Livewire::test(CapsuleDraftEditor::class, ['capsule' => $draft])
+            ->assertSet('opening', '2026-11-01T01:30')
+            ->assertSet('openingOffset', '-05:00');
+    }
 }
