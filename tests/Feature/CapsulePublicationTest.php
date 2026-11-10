@@ -18,6 +18,23 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_a_locked_capsule_does_not_expose_source_snapshot_or_token_in_the_response(): void
+    {
+        $draft = Capsule::factory()->create(['title' => 'Unique draft title', 'body' => 'Unique private original']);
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $this->travelTo($snapshot->opens_at->subSecond());
+
+        $response = $this->withoutVite()->get(route('capsules.read', $snapshot->reader_token))->assertOk();
+        $payload = $response->getContent().json_encode($response->headers->all(), JSON_UNESCAPED_UNICODE);
+
+        foreach ([$draft->title, $draft->body, $snapshot->title, $snapshot->segments[0]['text'],
+            $snapshot->reader_token, $snapshot->reader_token_hash, $snapshot->seed, 'wire:snapshot', 'data-csrf'] as $secret) {
+            $this->assertStringNotContainsString($secret, $payload);
+        }
+    }
+
     public function test_guest_owner_and_other_author_follow_the_capsule_route_matrix(): void
     {
         $draft = Capsule::factory()->create();
