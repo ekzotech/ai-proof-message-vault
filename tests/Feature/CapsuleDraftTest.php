@@ -6,12 +6,27 @@ use App\Livewire\CapsuleDraftEditor;
 use App\Models\Capsule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class CapsuleDraftTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_a_new_draft_is_blocked_when_the_author_exhausts_the_creation_budget(): void
+    {
+        $author = User::factory()->create();
+        RateLimiter::increment('capsules:create:'.$author->id, 60, 12);
+        $editor = Livewire::actingAs($author)->test(CapsuleDraftEditor::class)
+            ->set('title', 'Заголовок')->set('body', 'Текст послания');
+
+        $editor->call('save')->assertHasErrors('creationLimit');
+        $this->assertDatabaseCount('capsules', 0);
+        $this->travel(61)->seconds();
+        $editor->call('save')->assertHasNoErrors();
+        $this->assertDatabaseCount('capsules', 1);
+    }
 
     public function test_the_editor_creates_a_draft_owned_by_the_signed_in_author(): void
     {

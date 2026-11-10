@@ -7,6 +7,7 @@ use App\Rules\CapsuleText;
 use App\Support\LocalOpeningTime;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -92,7 +93,19 @@ class CapsuleDraftEditor extends Component
 
             session()->flash('status', 'Черновик сохранён.');
         } else {
-            $capsule = auth()->user()->capsules()->create($data);
+            $author = auth()->user();
+            $capsule = RateLimiter::attempt(
+                'capsules:create:'.$author->id,
+                12,
+                fn () => $author->capsules()->create($data),
+                60,
+            );
+
+            if ($capsule === false) {
+                $this->addError('creationLimit', 'Слишком много новых черновиков. Попробуйте через минуту.');
+
+                return;
+            }
         }
 
         $this->redirectRoute('capsules.edit', $capsule);

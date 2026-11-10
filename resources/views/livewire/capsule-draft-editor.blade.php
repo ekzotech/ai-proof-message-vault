@@ -1,4 +1,8 @@
 <form class="auth-form" wire:submit="save">
+    @error('creationLimit')
+        <p class="auth-error" role="alert">{{ $message }}</p>
+    @enderror
+
     @error('conflict')
         <p class="auth-error" role="alert">{{ $message }}</p>
     @enderror

@@ -11,11 +11,27 @@ use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
 class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_the_reader_limit_recovers_after_the_window_expires(): void
+    {
+        $snapshot = $this->snapshot(Capsule::factory()->create());
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $url = route('capsules.read', $snapshot->reader_token);
+        $first = $this->withoutVite()->get($url)->assertOk();
+        $first->assertHeader('X-RateLimit-Limit', '120');
+
+        RateLimiter::increment(md5('capsule-reader'.'127.0.0.1'), 60, 119);
+        $this->get($url)->assertTooManyRequests();
+        $this->travel(61)->seconds();
+        $this->get($url)->assertOk();
+    }
 
     public function test_deleting_a_capsule_removes_its_snapshot_and_reader_link(): void
     {
