@@ -146,7 +146,9 @@ class CapsulePublicationTest extends TestCase
 
         $this->withoutVite()->actingAs(User::factory()->create())->get($url)->assertForbidden();
         $this->actingAs($draft->author)->get(route('dashboard'))->assertSee($url);
-        $this->get($url)->assertOk()->assertSee('Копировать ссылку')->assertSee($snapshot->reader_token);
+        $this->get($url)->assertOk()->assertSee('Копировать ссылку')->assertSee($snapshot->reader_token)
+            ->assertSee('aria-labelledby="revoke-title"', escape: false)
+            ->assertSee('Подтвердить отзыв');
     }
 
     public function test_after_opening_the_reader_sees_the_saved_snapshot_without_rerunning_the_pipeline(): void

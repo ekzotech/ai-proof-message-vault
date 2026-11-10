@@ -19,11 +19,22 @@
                 })()">Копировать ссылку</button>
                 <p role="status" x-text="message"></p>
             </div>
-            <form method="post" action="{{ route('capsules.revoke', $capsule) }}">
-                @csrf
-                @method('PATCH')
-                <button class="action" type="submit">Отозвать ссылку</button>
-            </form>
+            <div x-data>
+                <button class="action" type="button" x-ref="revokeTrigger"
+                    x-on:click="$refs.revokeDialog.showModal()">Отозвать ссылку</button>
+                <dialog class="vault-dialog" x-ref="revokeDialog" aria-labelledby="revoke-title"
+                    x-on:close="$refs.revokeTrigger.focus()">
+                    <h2 id="revoke-title">Отозвать читательскую ссылку?</h2>
+                    <p>Читатели потеряют доступ к капсуле по этой ссылке.</p>
+                    <form class="dialog-actions" method="post" action="{{ route('capsules.revoke', $capsule) }}">
+                        @csrf
+                        @method('PATCH')
+                        <button type="button" class="landing-secondary" autofocus
+                            x-on:click="$refs.revokeDialog.close()">Отмена</button>
+                        <button class="action" type="submit">Подтвердить отзыв</button>
+                    </form>
+                </dialog>
+            </div>
         @endif
         <p><a class="underline" href="{{ route('capsules.delete', $capsule) }}">Удалить капсулу</a></p>
         <p><a class="underline" href="{{ route('dashboard') }}">В кабинет</a></p>

@@ -272,6 +272,38 @@ button.site-header__link {
     font-size: clamp(1rem, 3vw, 1.25rem);
 }
 
+.vault-dialog {
+    width: min(calc(100% - 2rem), 29rem);
+    max-height: calc(100% - 2rem);
+    margin: auto;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+}
+
+.vault-dialog::backdrop {
+    background: rgb(34 33 30 / 45%);
+}
+
+.vault-dialog p {
+    margin-top: 0.75rem;
+}
+
+.dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .action, .landing-secondary {
+        transition: background-color 150ms ease, color 150ms ease;
+    }
+}
+
 .preview-presets {
     display: flex;
     flex-wrap: wrap;
