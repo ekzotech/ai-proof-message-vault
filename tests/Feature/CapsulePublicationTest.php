@@ -17,6 +17,19 @@ class CapsulePublicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_only_the_author_can_retrieve_the_reader_link_from_the_dashboard(): void
+    {
+        $draft = Capsule::factory()->create();
+        $snapshot = $this->snapshot($draft);
+        $snapshot->issueReaderToken();
+        $snapshot->save();
+        $url = route('capsules.publication', $draft);
+
+        $this->withoutVite()->actingAs(User::factory()->create())->get($url)->assertForbidden();
+        $this->actingAs($draft->author)->get(route('dashboard'))->assertSee($url);
+        $this->get($url)->assertOk()->assertSee('Копировать ссылку')->assertSee($snapshot->reader_token);
+    }
+
     public function test_after_opening_the_reader_sees_the_saved_snapshot_without_rerunning_the_pipeline(): void
     {
         $draft = Capsule::factory()->create(['title' => 'Живой заголовок', 'body' => 'Живой текст']);

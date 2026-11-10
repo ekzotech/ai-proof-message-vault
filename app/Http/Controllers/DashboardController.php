@@ -15,6 +15,12 @@ class DashboardController
             ->orderByDesc('id')
             ->paginate(12, ['id', 'title', 'opens_at', 'updated_at']);
 
-        return view('dashboard', compact('drafts'));
+        $published = $request->user()->capsules()
+            ->whereHas('publication')
+            ->with('publication:id,capsule_id,opens_at,revoked_at')
+            ->latest('updated_at')->orderByDesc('id')
+            ->paginate(12, ['id', 'title'], pageName: 'published');
+
+        return view('dashboard', compact('drafts', 'published'));
     }
 }

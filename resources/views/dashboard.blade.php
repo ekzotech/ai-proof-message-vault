@@ -33,5 +33,21 @@
                 {{ $drafts->links() }}
             @endif
         </div>
+        <div class="draft-list">
+            <h2>Опубликованные капсулы</h2>
+            @if ($published->isEmpty())
+                <p>Здесь появятся опубликованные капсулы.</p>
+            @else
+                <ul role="list">
+                    @foreach ($published as $capsule)
+                        <li>
+                            <a class="underline" href="{{ route('capsules.publication', $capsule) }}">{{ $capsule->title }}</a>
+                            <p class="auth-hint">{{ \App\Capsules\CapsuleState::at($capsule->publication, now())->label() }}</p>
+                        </li>
+                    @endforeach
+                </ul>
+                {{ $published->links() }}
+            @endif
+        </div>
     </section>
 </x-layouts.vault>
